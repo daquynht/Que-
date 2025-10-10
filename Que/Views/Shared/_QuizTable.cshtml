@@ -1,0 +1,16 @@
+@model IEnumerable<Quiz>
+
+<div class="container">
+    <table class='table table-striped'>
+        <tr><th>Id</th><th>Name</th><th>Description</th></tr>
+        @foreach (var quiz in Model)
+        {
+            <tr>
+                <td>@quiz.QuizId</td>
+                <td>@quiz.Name</td>
+                <td>@quiz.Description</td>
+                <td></td>
+            </tr>
+        }
+    </table>
+</div>

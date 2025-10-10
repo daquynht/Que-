@@ -1,16 +1,5 @@
-@model IEnumerable<Que.Models.Quiz>
+@model QuizesViewModel
 
-<div class="container">
-    <h1>@ViewBag.CurrentViewName</h1>
-    <table class='table table-striped'>
-        <tr><th>Id</th><th>Name</th><th>Price</th><th>Description</th></tr>
-        @foreach (var quiz in Model)
-        {
-            <tr>
-                <td>@quiz.QuizId</td>
-                <td>@quiz.Name</td>
-                <td></td>
-            </tr>
-        }
-    </table>
-</div>
+<h1>List of Quizes (@Model.CurrentViewName View)</h1>
+
+<partial name="_QuizTable" model="Model.Quizes" />

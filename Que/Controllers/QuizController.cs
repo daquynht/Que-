@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Que.Models;
+using Que.ViewModels;
 
 namespace Que.Controllers;
 
@@ -11,21 +12,30 @@ public class QuizController : Controller
 {
     public IActionResult Table()
     {
-        var Quizes = new List<Quiz>();
-        var Quiz1 = new Quiz();
-        Quiz1.QuizId = 1;
-        Quiz1.Name = "Quiz 1";
+        var quizes = GetQuizes();
+        var quizesViewModel = new QuizesViewModel(quizes, "Table");
+        return View(quizesViewModel);
+    }
 
-        var Quiz2 = new Quiz
+    public List<Quiz> GetQuizes()
+    {
+        var quizes = new List<Quiz>();
+        var quiz1 = new Quiz
         {
-            QuizId = 2,
-            Name = "Quiz 2",
+            QuizId = 1,
+            Name = "Quiz test",
+            Description = "Test",
         };
 
-        Quizes.Add(Quiz1);
-        Quizes.Add(Quiz2);
+        var quiz2 = new Quiz
+        {
+            QuizId = 2,
+            Name = "Quiz test2",
+            Description = "Test2",
+        };
 
-        ViewBag.CurrentViewName = "List of Quizes";
-        return View(Quizes);
+        quizes.Add(quiz1);
+        quizes.Add(quiz2);
+        return quizes;
     }
 }
