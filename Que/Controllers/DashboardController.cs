@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace MyShop.Controllers
+namespace Que.Controllers
 {
-    public class HomeController : Controller
+    public class DashboardController : Controller
     {
         // GET: /<controller>/
         public IActionResult Index()
