@@ -10,9 +10,16 @@ namespace Que.Controllers;
 
 public class QuizController : Controller
 {
+    private readonly QuizDbContext _quizDbContext;
+
+    public QuizController(QuizDbContext quizDbContext)
+    {
+        _quizDbContext = quizDbContext;
+    }
+
     public IActionResult Table()
     {
-        var quizes = GetQuizes();
+        List<Quiz> quizes = _quizDbContext.Quizes.ToList();
         var quizesViewModel = new QuizesViewModel(quizes, "Table");
         return View(quizesViewModel);
     }
