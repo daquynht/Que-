@@ -246,7 +246,7 @@ ClientBin/
 *.publishsettings
 orleans.codegen.cs
 
-#Test
+#ignorer disse
 obj/**/*.editorconfig
 obj/
 *.cache
