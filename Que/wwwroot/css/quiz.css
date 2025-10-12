@@ -1,0 +1,27 @@
+.quiz-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.quiz-question {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.quiz-option {
+    display: block;
+    background-color: #e9ecef;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.quiz-option:hover {
+    background-color: #d4edda;
+}

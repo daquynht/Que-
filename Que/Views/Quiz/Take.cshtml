@@ -1,0 +1,28 @@
+@model Que.ViewModels.QuizTakeViewModel
+
+<h2>Quiz: @Model.QuizName</h2>
+
+<form asp-action="SubmitQuiz" method="post">
+    <input type="hidden" name="quizId" value="@Model.QuizId" />
+
+    @for (int i = 0; i < Model.Questions.Count; i++)
+    {
+        var question = Model.Questions[i];
+        <div class="question-block mb-3">
+            <p><strong>@(i + 1). @question.Text</strong></p>
+            @for (int j = 0; j < question.Options.Count; j++)
+            {
+                var option = question.Options[j];
+                <div>
+                    <input type="radio" 
+                           name="Answers[@i]" 
+                           value="@option.OptionId" 
+                           id="q@i-option@j" />
+                    <label for="q@i-option@j">@option.Text</label>
+                </div>
+            }
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

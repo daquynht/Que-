@@ -1,0 +1,11 @@
+@model int
+
+@{
+    ViewData["Title"] = "Quiz Result";
+}
+
+<h2>Quiz Result</h2>
+
+<p>Your score: <strong>@Model</strong></p>
+
+<a href="@Url.Action("Index", "Quiz")">Take another quiz</a>

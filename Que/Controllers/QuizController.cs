@@ -5,44 +5,45 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Que.Models;
 using Que.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
-namespace Que.Controllers;
-
-public class QuizController : Controller
+namespace Que.Controllers
 {
-    private readonly QuizDbContext _quizDbContext;
-
-    public QuizController(QuizDbContext quizDbContext)
+    public class QuizController : Controller
     {
-        _quizDbContext = quizDbContext;
-    }
+        private readonly QuizDbContext _quizDbContext;
 
-    public IActionResult Table()
-    {
-        List<Quiz> quizes = _quizDbContext.Quizes.ToList();
-        var quizesViewModel = new QuizesViewModel(quizes, "Table");
-        return View(quizesViewModel);
-    }
-
-    public List<Quiz> GetQuizes()
-    {
-        var quizes = new List<Quiz>();
-        var quiz1 = new Quiz
+        public QuizController(QuizDbContext quizDbContext)
         {
-            QuizId = 1,
-            Name = "Quiz test",
-            Description = "Test",
-        };
+            _quizDbContext = quizDbContext;
+        }
 
-        var quiz2 = new Quiz
+        // Eksisterende Table
+        public IActionResult Table()
         {
-            QuizId = 2,
-            Name = "Quiz test2",
-            Description = "Test2",
-        };
+            List<Quiz> quizes = _quizDbContext.Quizes.ToList();
+            var quizesViewModel = new QuizesViewModel(quizes, "Table");
+            return View(quizesViewModel);
+        }
 
-        quizes.Add(quiz1);
-        quizes.Add(quiz2);
-        return quizes;
+        // Ny Take-action
+        public IActionResult Take(int id)
+        {
+            var quiz = _quizDbContext.Quizes
+                .Include(q => q.Questions)             // Hent spørsmål
+                    .ThenInclude(qs => qs.Options)     // Hent alternativer
+                .FirstOrDefault(q => q.QuizId == id);
+
+            if (quiz == null) return NotFound();
+
+            var viewModel = new QuizTakeViewModel
+            {
+                QuizId = quiz.QuizId,
+                QuizName = quiz.Name,
+                Questions = quiz.Questions.ToList()
+            };
+
+            return View(viewModel); // Viser Take.cshtml
+        }
     }
 }
