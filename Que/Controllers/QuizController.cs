@@ -1,49 +1,82 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Que.DAL;
 using Que.Models;
 using Que.ViewModels;
-using Microsoft.EntityFrameworkCore;
 
-namespace Que.Controllers
+namespace Que.Controllers;
+
+public class QuizController : Controller
 {
-    public class QuizController : Controller
+    private readonly IQuizRepository _quizRepository;
+
+    public QuizController(IQuizRepository quizRepository)
     {
-        private readonly QuizDbContext _quizDbContext;
+        _quizRepository = quizRepository;
+    }
 
-        public QuizController(QuizDbContext quizDbContext)
+    public async Task<IActionResult> Table()
+    {
+        var quizes = await _quizRepository.GetAll();
+        var quizesViewModel = new QuizViewModel(quizes, "Table");
+        return View(quizesViewModel);
+    }
+
+    [HttpGet]
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(Quiz quiz)
+    {
+        if (ModelState.IsValid)
         {
-            _quizDbContext = quizDbContext;
+            await _quizRepository.Create(quiz);
+            return RedirectToAction(nameof(Table));
         }
 
-        // Eksisterende Table
-        public IActionResult Table()
+        return View(quiz);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Update(int id)
+    {
+        var item = await _quizRepository.GetItemById(id);
+        if (item == null)
         {
-            List<Quiz> quizes = _quizDbContext.Quizes.ToList();
-            var quizesViewModel = new QuizesViewModel(quizes, "Table");
-            return View(quizesViewModel);
+            return NotFound();
+        }
+        return View(item);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Update(Quiz quiz)
+    {
+        if (ModelState.IsValid)
+        {
+            await _quizRepository.Update(quiz);
+            return RedirectToAction(nameof(Table));
         }
 
-        // Ny Take-action
-        public IActionResult Take(int id)
+        return View(quiz);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var quiz = await _quizRepository.GetQuizById(id);
+        if (quiz == null)
         {
-            var quiz = _quizDbContext.Quizes
-                .Include(q => q.Questions)             // Hent spørsmål
-                    .ThenInclude(qs => qs.Options)     // Hent alternativer
-                .FirstOrDefault(q => q.QuizId == id);
-
-            if (quiz == null) return NotFound();
-
-            var viewModel = new QuizTakeViewModel
-            {
-                QuizId = quiz.QuizId,
-                QuizName = quiz.Name,
-                Questions = quiz.Questions.ToList()
-            };
-
-            return View(viewModel); // Viser Take.cshtml
+            return NotFound();
         }
+        return View(quiz);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        await _quizRepository.Delete(id);
+        return RedirectToAction(nameof(Table));
     }
 }
