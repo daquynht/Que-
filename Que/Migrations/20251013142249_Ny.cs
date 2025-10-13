@@ -5,7 +5,7 @@
 namespace Que.Migrations
 {
     /// <inheritdoc />
-    public partial class Test : Migration
+    public partial class Ny : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

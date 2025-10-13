@@ -11,8 +11,8 @@ using Que.DAL;
 namespace Que.Migrations
 {
     [DbContext(typeof(QuizDbContext))]
-    [Migration("20251013135025_Test")]
-    partial class Test
+    [Migration("20251013142344_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
