@@ -8,8 +8,7 @@
         "args": [
           "build",
           "${workspaceFolder}/Que/Que.csproj",
-          "/property:GenerateFullPaths=true",
-          "/consoleloggerparameters:NoSummary"
+        
         ],
         "problemMatcher": "$msCompile"
       }
