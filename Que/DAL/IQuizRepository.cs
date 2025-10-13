@@ -2,7 +2,7 @@ using Que.Models;
 
 namespace Que.DAL;
 
-public interface IItemRepository
+public interface IQuizRepository
 {
 	Task<IEnumerable<Quiz>> GetAll();
     Task<Quiz?> GetQuizById(int id);

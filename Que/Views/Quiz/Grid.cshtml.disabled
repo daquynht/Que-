@@ -1,4 +1,4 @@
-@model IEnumerable<Item> //en liste over quiz-objekter
+@model IEnumerable<Quiz> //en liste over quiz-objekter
 
 <h1>List of quizes (@ViewBag.CurrentViewName View)</h1>
 

@@ -17,7 +17,7 @@ public class QuizController : Controller
     public async Task<IActionResult> Table()
     {
         var quizes = await _quizRepository.GetAll();
-        var quizesViewModel = new QuizViewModel(quizes, "Table");
+        var quizesViewModel = new QuizesViewModel(quizes, "Table");
         return View(quizesViewModel);
     }
 
@@ -42,12 +42,12 @@ public class QuizController : Controller
     [HttpGet]
     public async Task<IActionResult> Update(int id)
     {
-        var item = await _quizRepository.GetItemById(id);
-        if (item == null)
+        var quiz = await _quizRepository.GetQuizById(id);
+        if (quiz == null)
         {
             return NotFound();
         }
-        return View(item);
+        return View(quiz);
     }
 
     [HttpPost]
