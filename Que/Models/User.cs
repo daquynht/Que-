@@ -1,8 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Que.Models;
 
 public class User
 {
-    public int QuizId { get; set; }
+    [Key]
+    public int UserId { get; set; }
     public string Name { get; set; } = string.Empty;
     public virtual List<Quiz>? Quizes { get; set; }
 }

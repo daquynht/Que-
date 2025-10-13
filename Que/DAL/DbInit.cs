@@ -46,5 +46,6 @@ public static class DBInit
             context.AddRange(users);
             context.SaveChanges();
         }
+        context.SaveChanges();
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Que.Models;
+using Que.DAL;
 
 var builder = WebApplication.CreateBuilder(args);
 
