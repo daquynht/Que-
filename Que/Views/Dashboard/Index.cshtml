@@ -4,4 +4,15 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome to Que</h1>
+    <p>Select a quiz to get started</p>
 </div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var quiz in Model)
+    {
+        <div class="col">
+            <partial name="_QuizCard" model="quiz" />
+        </div>
+    }
+</div>
+
