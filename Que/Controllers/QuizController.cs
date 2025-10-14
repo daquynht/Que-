@@ -77,4 +77,13 @@ public class QuizController : Controller
         {
             return NotFound();
         }
-        re
+        return View(quiz);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        await _quizRepository.Delete(id);
+        return RedirectToAction(nameof(Table));
+    }
+}

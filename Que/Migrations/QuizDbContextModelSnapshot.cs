@@ -106,4 +106,11 @@ namespace Que.Migrations
                     b.Navigation("Questions");
                 });
 
-            modelBuilder.Entity("Que.Models.User", 
+            modelBuilder.Entity("Que.Models.User", b =>
+                {
+                    b.Navigation("Quizes");
+                });
+#pragma warning restore 612, 618
+        }
+    }
+}

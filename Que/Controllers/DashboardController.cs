@@ -17,4 +17,19 @@ namespace Que.Controllers
         public IActionResult Index()
         {
             var quizes = _context.Quizes.ToList(); // henter alle quizene fra databasen
-            return View(quizes);                   // sender dem til vie
+            return View(quizes);                   // sender dem til viewet
+        }
+
+        public IActionResult Table() 
+        {
+        var viewModel = new QuizesViewModel(_context.Quizes.ToList(), "Table");
+        return View(viewModel);
+        }
+
+        public IActionResult Grid()
+        {   
+            var quizes = _context.Quizes.ToList();
+            return View(quizes);
+        }
+    }
+}
