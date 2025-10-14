@@ -1,4 +1,4 @@
-@model IEnumerable<Quiz> //en liste over quiz-objekter
+@model IEnumerable<Que.Models.Quiz> //en liste over quiz-objekter
 
 <h1>List of quizes (@ViewBag.CurrentViewName View)</h1>
 
@@ -9,15 +9,15 @@
     {
         <div class="col">
             <div class="card h-100">
-                <img src="@quiz.ImageUrl" class="card-img-top" alt="@quiz.Title">
+               <img src="@quiz.ImageUrl" class="card-img-top" alt="@quiz.Name">
 
-                <div class="card-body">
-                    <h5 class="card-title">@quiz.Title</h5>
+                <div class="card-body">do
+                    <h5 class="card-title">@quiz.Name</h5>
                     <p class ="card-text">@quiz.Description</p>
                 </div>
 
                 <div class="card-footer text-center">
-                    <a href="/Quiz/Start/@quiz.Id" class="btn btn-primary">StartQuiz</a>
+                    <a href="/Quiz/Start/@quiz.QuizId" class="btn btn-primary">StartQuiz</a>
                 </div>
             </div>
         </div>

@@ -1,5 +1,31 @@
 @model QuizesViewModel
+<a href="/Dashboard/Grid">Grid View</a>
 
 <h1>List of Quizes (@Model.CurrentViewName View)</h1>
 
-<partial name="_QuizTable" model="Model.Quizes" />
+<div class ="container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Quiz Name</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var quiz in Model.Quizes)
+            {
+                <tr>
+                    <td>
+                        <img srx="@quiz.ImageUrl" alt="@quiz.Name" style="max-with: 100px; max-heights: 60px;"/>                    <td>@quiz.Name</td>
+                    <td>@quiz.Description</td>
+                    <td>
+                        <a href="/Quiz/Take/@quiz.Id" class="btn btn-primary">Take Quiz</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!--<partial name="_QuizTable" model="Model.Quizes" /> -->
