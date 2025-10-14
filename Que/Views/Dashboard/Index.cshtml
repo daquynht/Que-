@@ -1,11 +1,28 @@
 @model IEnumerable<Que.Models.Quiz>
 
 @{
-    ViewData["Title"] = "Dashboard Page";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
+<a href="/Quiz/Grid" class="btn btn-primary">See Quizzes</a>
+
+<div class="text-center mb-5">
     <h1 class="display-4">Welcome to Que</h1>
     <p>Select a quiz to get started</p>
 </div>
 
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var quiz in Model)
+    {
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <img src="@quiz.ImageUrl" class="card-img-top" alt="@quiz.Name" />
+                <div class="card-body">
+                    <h5 class="card-title">@quiz.Name</h5>
+                    <p class="card-text text-muted">@quiz.Description</p>
+                    <a href="/Quiz/Table" class="btn btn-outline-primary">View Table</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

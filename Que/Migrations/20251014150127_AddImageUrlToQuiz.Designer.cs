@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Que.DAL;
 
@@ -10,9 +11,11 @@ using Que.DAL;
 namespace Que.Migrations
 {
     [DbContext(typeof(QuizDbContext))]
-    partial class QuizDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251014150127_AddImageUrlToQuiz")]
+    partial class AddImageUrlToQuiz
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,4 +109,11 @@ namespace Que.Migrations
                     b.Navigation("Questions");
                 });
 
-            modelBuilder.Entity("Que.Models.User", 
+            modelBuilder.Entity("Que.Models.User", b =>
+                {
+                    b.Navigation("Quizes");
+                });
+#pragma warning restore 612, 618
+        }
+    }
+}

@@ -4,13 +4,15 @@ namespace Que.ViewModels
 {
     public class QuizesViewModel
     {
-        public IEnumerable<Quiz> Quizes;
-        public string? CurrentViewName;
+        public IEnumerable<Quiz> Quizes { get; set; } = new List<Quiz>();
+        public string? CurrentViewName { get; set; }
 
         public QuizesViewModel(IEnumerable<Quiz> quizes, string? currentViewName)
         {
             Quizes = quizes;
             CurrentViewName = currentViewName;
         }
+
+        public QuizesViewModel() { }
     }
 }

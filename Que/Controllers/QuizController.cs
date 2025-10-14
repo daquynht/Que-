@@ -14,6 +14,13 @@ public class QuizController : Controller
         _quizRepository = quizRepository;
     }
 
+    public async Task<IActionResult> Grid()
+    {
+        var quizes = await _quizRepository.GetAll();
+        var viewModel = new QuizesViewModel(quizes, "Grid");
+        return View(viewModel);
+    }
+
     public async Task<IActionResult> Table()
     {
         var quizes = await _quizRepository.GetAll();
@@ -70,13 +77,4 @@ public class QuizController : Controller
         {
             return NotFound();
         }
-        return View(quiz);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        await _quizRepository.Delete(id);
-        return RedirectToAction(nameof(Table));
-    }
-}
+        re
