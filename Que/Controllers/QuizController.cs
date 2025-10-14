@@ -18,14 +18,14 @@ public class QuizController : Controller
     {
         var quizes = await _quizRepository.GetAll();
         var viewModel = new QuizesViewModel(quizes, "Grid");
-        return View(viewModel);
+        return View(quizes);
     }
 
     public async Task<IActionResult> Table()
     {
         var quizes = await _quizRepository.GetAll();
         var quizesViewModel = new QuizesViewModel(quizes, "Table");
-        return View(quizesViewModel);
+        return View(quizes);
     }
 
     [HttpGet]

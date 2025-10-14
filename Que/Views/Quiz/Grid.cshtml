@@ -1,26 +1,23 @@
-@model IEnumerable<Que.Models.Quiz> //en liste over quiz-objekter
+@model Que.ViewModels.QuizesViewModel
 
-<h1>List of quizes (@ViewBag.CurrentViewName View)</h1>
+<a asp-controller="Quiz" asp-action="Table" class="btn btn-secondary">Table View</a>
 
-<a href="/Quiz/Table">Table</a>
+<h1>List of Quizzes (@Model.CurrentViewName View)</h1>
 
 <div class="row row-cols-1 row-cols-md-3 g-4">
-    @foreach (var quiz in Model)
+    @foreach (var quiz in Model.Quizes)
     {
         <div class="col">
             <div class="card h-100">
-               <img src="@quiz.ImageUrl" class="card-img-top" alt="@quiz.Name">
-
-                <div class="card-body">do
+                <img src="@quiz.ImageUrl" class="card-img-top" alt="@quiz.Name" />
+                <div class="card-body">
                     <h5 class="card-title">@quiz.Name</h5>
-                    <p class ="card-text">@quiz.Description</p>
+                    <p class="card-text">@quiz.Description</p>
                 </div>
-
                 <div class="card-footer text-center">
-                    <a href="/Quiz/Start/@quiz.QuizId" class="btn btn-primary">StartQuiz</a>
+                    <a asp-controller="Quiz" asp-action="Take" asp-route-id="@quiz.QuizId" class="btn btn-primary">Take Quiz</a>
                 </div>
             </div>
         </div>
-        }
- </div> 
-
+    }
+</div>
