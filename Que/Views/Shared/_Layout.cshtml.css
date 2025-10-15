@@ -46,4 +46,8 @@ a.navbar-brand {
     white-space: nowrap;
     line-height: 60px;
   }
-  
+  .custom-footer {
+    /* Fjerner posisjonering for å la footeren ligge rett under innholdet */
+    position: relative; /* Eller du kan fjerne linjen helt */
+    width: 100%;
+  }

@@ -1,4 +1,4 @@
-body {
+/*body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f8f9fa;
     margin: 0;
@@ -20,4 +20,122 @@ footer {
     text-align: center;
     padding: 10px;
     margin-top: 30px;
+} */
+
+/* Generell stil for hele applikasjonen */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #ffffff; /* Lys pastell lilla/rosa bakgrunn */
+    margin: 0;
+    padding: 0;
+}
+
+/* --- Navigasjonsbar (custom-navbar) --- */
+
+/* Setter bakgrunnen for navbar ved hjelp av den custom-klassen i _Layout.cshtml */
+.custom-navbar {
+    background-color: #4E56C0 !important; /* Mørkeblå */
+    border-bottom: 3px solid #D78FEE; 
+}
+
+/* Stil for lenker i navbar */
+.custom-navbar a {
+    color: white !important;
+    font-weight: 600;
+}
+
+/* TITTEL */
+.main-title {
+    font-family: 'Poppins', sans-serif; 
+    font-weight: 900; 
+    font-size: 3.5rem; 
+    color: #4E56C0; /* Mørkeblå (Hovedfargen) */
+    text-shadow: 4px 4px 0px #D78FEE; /* Lys Lilla Skygge */
+    letter-spacing: 2px;
+    padding: 20px 0;
+    margin-bottom: 0 !important; 
+}
+
+.main-title + .lead {
+    color: #9B5DE0; /* Setter underteksten til dyp lilla */
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+/* --- Footer (custom-footer) --- */
+
+/* Setter bakgrunnen for footeren */
+.custom-footer {
+    background-color: #9B5DE0; /* Dyp lilla */
+    color: white; 
+    text-align: center;
+    padding: 15px 10px; 
+    /* Veldig viktig: Fjerner margin-top som kan skape store hull */
+    margin-top: 0; 
+}
+
+.custom-footer a {
+    color: #FDCFFA; /* Lys lenkefarge */
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* --- Overstyring av Bootstrap Knapper (btn-primary) --- */
+
+/* Standardfarge for alle btn-primary knapper */
+.btn-primary {
+    /* Setter standard bakgrunn til den mørkeblå fargen (samme som navbar) */
+    background-color: #4E56C0; 
+    border-color: #4E56C0;
+    color: #ffffff;
+    /* Fjerner skygge fra fokus/aktivitet, som ofte er blå som standard */
+    box-shadow: none; 
+    transition: background-color 0.3s ease; /* Jevn fargeovergang */
+}
+
+/* Hover-effekt: Når brukeren holder musen over knappen */
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    /* Setter hover-fargen til den mørke lillafargen */
+    background-color: #9B5DE0 !important;
+    border-color: #9B5DE0 !important;
+    color: #ffffff;
+    /* Må fjerne de standard Bootstrap-skygger som dukker opp ved hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important; 
+    opacity: 1; /* Sikrer at knappen vises i full opasitet */
+}
+
+/* Stil for de sekundære knappene (Grid/Table View knappen) */
+.btn-secondary {
+    background-color: #D78FEE; /* Bruker den lyse lilla fargen */
+    border-color: #D78FEE;
+    color: #4E56C0; /* Mørk tekstfarge for kontrast */
+    transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #9B5DE0; /* Hover til mørkere lilla */
+    border-color: #9B5DE0;
+    color: #ffffff;
+}
+
+/* KORTET MED QUIZ */
+.card {
+    border: 3px solid #9B5DE0; /* Tykk, lilla ramme */
+    border-radius: 15px; /* Avrundede hjørner */
+    transition: transform 0.2s;
+    box-shadow: 0 6px 10px rgba(78, 86, 192, 0.15); /* Subtil blå skygge */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Løfter kortet når man holder musen over */
+    box-shadow: 0 10px 20px rgba(78, 86, 192, 0.3); /* Tykkere skygge */
+}
+
+.card-img-top {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    object-fit: cover;
+    height: 150px; 
 }
