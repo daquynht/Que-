@@ -96,10 +96,18 @@ public class QuizController : Controller
         if (ModelState.IsValid)
         {
             await _quizRepository.Create(quiz);
-            return RedirectToAction(nameof(Table));
+            // Redirect to CreateQuestions page for this quiz
+            return RedirectToAction("CreateQuestions", new { quizId = quiz.QuizId });
         }
 
         return View(quiz);
+    }
+
+    [HttpGet]
+    public IActionResult CreateQuestions(int quizId)
+    {
+        ViewBag.QuizId = quizId;
+        return View();
     }
 
     [HttpGet]

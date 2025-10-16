@@ -1,0 +1,21 @@
+@{
+    ViewBag.Title = "Create Questions";
+}
+
+<h2>Create Questions for Quiz @ViewBag.QuizId</h2>
+
+<p>Here you can add questions for your quiz.</p>
+
+<!-- Add your form for creating questions here -->
+<form method="post" action="/Question/Create">
+    <input type="hidden" name="QuizId" value="@ViewBag.QuizId" />
+    <div class="form-group">
+        <label for="Text">Question Text</label>
+        <input type="text" name="Text" class="form-control" required />
+    </div>
+    <!-- Add more fields for options if needed -->
+    <button type="submit" class="btn btn-primary">Add Question</button>
+</form>
+
+<a asp-action="Table" asp-controller="Quiz" class="btn btn-secondary">Back to Quiz Table</a>
+<a asp-action="Table" asp-controller="Quiz" class="btn btn-info">See Quiz Questions (Table View)</a>
