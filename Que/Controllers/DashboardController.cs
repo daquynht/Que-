@@ -14,16 +14,35 @@ namespace Que.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        /* public IActionResult Index()
         {
             var quizes = _context.Quizes.ToList(); // henter alle quizene fra databasen
             return View(quizes);                   // sender dem til viewet
+        } */
+
+        [HttpGet]
+        public IActionResult Index(string selectedCategory)
+        {
+            var quizes = _context.Quizes.ToList(); // hent alle quizer fra DB
+
+            if (!string.IsNullOrEmpty(selectedCategory) && selectedCategory != "all")
+            {
+                quizes = quizes.Where(q => q.Category == selectedCategory).ToList();
+            }
+
+            var model = new DashboardViewModel
+            {
+                Quizes = quizes,
+                SelectedCategory = selectedCategory ?? "all"
+            };
+
+            return View(model);
         }
 
         public IActionResult Table() 
         {
-        var viewModel = new QuizesViewModel(_context.Quizes.ToList(), "Table");
-        return View(viewModel);
+            var viewModel = new QuizesViewModel(_context.Quizes.ToList(), "Table");
+            return View(viewModel);
         }
 
         public IActionResult Grid()
@@ -31,5 +50,6 @@ namespace Que.Controllers
             var quizes = _context.Quizes.ToList();
             return View(quizes);
         }
+        
     }
 }

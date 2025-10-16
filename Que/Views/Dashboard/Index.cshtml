@@ -1,28 +1,93 @@
-@model IEnumerable<Que.Models.Quiz>
+@model Que.ViewModels.DashboardViewModel
 
 @{
     ViewData["Title"] = "Dashboard";
 }
 
-<a href="/Quiz/Grid" class="btn btn-primary">See Quizzes</a>
+<div class="container mt-4">
 
-<div class="text-center mb-5">
-    <h1 class="main-title display-4">Welcome to Que</h1>
-    <p class= "lead">Select a quiz to get started</p>
-</div>
+    <h1 class="mb-4">Quizes Dashboard</h1>
 
-<div class="row row-cols-1 row-cols-md-3 g-4">
-    @foreach (var quiz in Model)
-    {
-        <div class="col">
-            <div class="card h-100 shadow-sm">
-                <img src="@quiz.ImageUrl" class="card-img-top" alt="@quiz.Name" />
-                <div class="card-body">
-                    <h5 class="card-title">@quiz.Name</h5>
-                    <p class="card-text text-muted">@quiz.Description</p>
-                    <a href="/Quiz/Table" class="btn btn-outline-primary">Take Quiz</a>
-                </div>
-            </div>
+    <!-- Search and Filters -->
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="searchTerm" class="form-control" placeholder="Search by title, description, category..."
+                   value="@Model.SearchTerm" />
         </div>
-    }
+
+        <div class="col-md-2">
+            <select name="selectedCategory" class="form-select">
+                <option value="">All Categories</option>
+                @foreach (var category in Model.Categories)
+                {
+                    @:<option value="@category" @(Model.SelectedCategory == category ? "selected=\"selected\"" : "")>@category</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="selectedDifficulty" class="form-select">
+                <option value="">All Levels</option>
+                @foreach (var difficulty in Model.Difficulties)
+                {
+                    @:<option value="@difficulty" @(Model.SelectedDifficulty == difficulty ? "selected=\"selected\"" : "")>@difficulty</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="selectedQuestionCount" class="form-select">
+                <option value="">Any Length</option>
+                @foreach (var range in Model.QuestionCounts)
+                {
+                    @:<option value="@range.Label" @(Model.SelectedQuestionCount == range.Label ? "selected=\"selected\"" : "")>@range.Label</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    <!-- Quizzes Table -->
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Difficulty</th>
+                <th>Questions</th>
+                <th>Time Limit (min)</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Quizes != null && Model.Quizes.Any())
+            {
+                foreach (var quiz in Model.Quizes)
+                {
+                    <tr>
+                        <td>@quiz.Name</td>
+                        <td>@quiz.Category</td>
+                        <td>@quiz.Difficulty</td>
+                        <td>@(quiz.Questions?.Count ?? 0)</td>
+                        <td>@quiz.TimeLimit</td>
+                        <td>
+                            <a href="@Url.Action("Take", "Quiz", new { id = quiz.QuizId })" 
+                               class="btn btn-success btn-sm w-100">
+                                Start Quiz
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center">No quizzes found. Try adjusting your search or filters.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>

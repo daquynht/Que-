@@ -27,6 +27,55 @@ public class QuizController : Controller
         var viewModel = new QuizesViewModel(quizes, "Table");
         return View(viewModel);
     }
+    /* public async Task<IActionResult> Table(string searchTerm, string category, string difficulty, string questionCount)
+    {
+        var quizes = await _quizRepository.GetAll();
+
+        // 🔍 Filterlogikk
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            searchTerm = searchTerm.ToLower();
+            quizes = quizes.Where(q =>
+                (q.Name != null && q.Name.ToLower().Contains(searchTerm)) ||
+                (q.Description != null && q.Description.ToLower().Contains(searchTerm)) ||
+                (q.Category != null && q.Category.ToLower().Contains(searchTerm))
+            ).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(category) && category != "all")
+            quizes = quizes.Where(q => q.Category == category).ToList();
+
+        if (!string.IsNullOrEmpty(difficulty) && difficulty != "all")
+            quizes = quizes.Where(q => q.Difficulty == difficulty).ToList();
+
+        if (!string.IsNullOrEmpty(questionCount) && questionCount != "all")
+        {
+            var ranges = new Dictionary<string, (int min, int max)>
+            {
+                { "1-5", (1, 5) },
+                { "6-10", (6, 10) },
+                { "11-15", (11, 15) },
+                { "16-20", (16, 20) },
+                { "20+", (21, int.MaxValue) }
+            };
+
+            if (ranges.TryGetValue(questionCount, out var range))
+            {
+                quizes = quizes.Where(q => q.Questions.Count >= range.min && q.Questions.Count <= range.max).ToList();
+            }
+        }
+
+        // ✅ Send tilbake viewmodel
+        var quizesViewModel = new QuizesViewModel(quizes, "Table")
+        {
+            SearchTerm = searchTerm,
+            Category = category,
+            Difficulty = difficulty,
+            QuestionCount = questionCount
+        };
+
+        return View(quizesViewModel);
+    } */
 
     public async Task<IActionResult> SeeQuizes()
     {
