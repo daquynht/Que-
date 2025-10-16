@@ -18,6 +18,6 @@ namespace Que.Models
         public int TimeLimit { get; set; } = 10;
 
         // Legg til denne for at Include(q => q.Questions) fungerer
-        public virtual List<Question>? Questions { get; set; } = new List<Question>();
+        public virtual List<Question> Questions { get; set; } = new List<Question>();
     }
 }
