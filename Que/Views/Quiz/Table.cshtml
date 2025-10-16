@@ -1,8 +1,6 @@
 @model Que.ViewModels.QuizesViewModel
 
-<a asp-controller="Quiz" asp-action="Grid" class="btn btn-secondary">Grid View</a>
-
-<h1>List of Quizes (@Model.CurrentViewName View)</h1>
+<h1>List of Quizes</h1>
 
 <div class="container mt-4">
     <table class="table table-striped table-hover">
@@ -42,6 +40,3 @@
         </tbody>
     </table>
 </div>
-
-<!-- Optional partial for future reuse -->
-<!-- <partial name="_QuizTable" model="Model.Quizes" /> -->
