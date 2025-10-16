@@ -13,6 +13,6 @@ namespace Que.Models
 
         // Alternativer
         public virtual List<Option> Options { get; set; } = new List<Option>();
-        public int CorrectOptionIndex { get; set; }
+        // public int CorrectOptionIndex { get; set; }
     }
 }

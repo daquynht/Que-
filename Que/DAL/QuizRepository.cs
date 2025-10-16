@@ -65,7 +65,7 @@ public class QuizRepository : IQuizRepository
         foreach (var option in question.Options)
         {
             option.QuestionId = question.QuestionId;
-            _db.Option.Add(option);
+            _db.Options.Add(option);
         }
         await _db.SaveChangesAsync();
     }
