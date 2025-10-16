@@ -4,7 +4,6 @@ namespace Que.Models
 {
     public class Question
     {
-        [Key]
         public int QuestionId { get; set; }
         public string Text { get; set; } = string.Empty;
 
@@ -13,6 +12,6 @@ namespace Que.Models
         public virtual Quiz? Quiz { get; set; }
 
         // Alternativer
-        //public List<Option> Options { get; set; } = new();
+        public virtual List<Option> Options { get; set; } = new();
     }
 }

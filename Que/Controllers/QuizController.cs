@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Que.DAL;
 using Que.Models;
 using Que.ViewModels;
@@ -27,11 +28,11 @@ public class QuizController : Controller
         var viewModel = new QuizesViewModel(quizes, "Table");
         return View(viewModel);
     }
+
     /* public async Task<IActionResult> Table(string searchTerm, string category, string difficulty, string questionCount)
     {
         var quizes = await _quizRepository.GetAll();
 
-        // 🔍 Filterlogikk
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             searchTerm = searchTerm.ToLower();
@@ -64,8 +65,7 @@ public class QuizController : Controller
                 quizes = quizes.Where(q => q.Questions.Count >= range.min && q.Questions.Count <= range.max).ToList();
             }
         }
-
-        // ✅ Send tilbake viewmodel
+       
         var quizesViewModel = new QuizesViewModel(quizes, "Table")
         {
             SearchTerm = searchTerm,
@@ -142,4 +142,66 @@ public class QuizController : Controller
         await _quizRepository.Delete(id);
         return RedirectToAction(nameof(Table));
     }
+
+
+    [HttpGet]
+    public async Task<IActionResult> Take(int id) // 'id' er QuizId
+    {
+        // 1. Henter quizen og dens spørsmål
+        var quiz = await _quizRepository.GetQuizById(id);
+        
+        // *DEN KRITISKE LINJEN:* Kaller metoden du implementerte
+        var questions = await _quizRepository.GetQuestionsByQuizId(id); 
+
+        if (quiz == null || questions == null || !questions.Any())
+        {
+            return NotFound("Quizen eller dens spørsmål ble ikke funnet.");
+        }
+
+        // 2. Velger det første spørsmålet (for MVP)
+        var firstQuestion = questions.First();
+
+        // 3. Setter opp ViewModel for visning
+        var viewModel = new QuizTakeViewModel
+        {
+            QuizId = quiz.QuizId,
+            QuizName = quiz.Name ?? "Ukjent Quiz",
+            QuestionNumber = 1, // Start med spørsmål 1
+            QuestionText = firstQuestion.Text,
+            
+            // Hardkoder alternativer for MVP (som vi avtalte)
+            // I et fullstendig prosjekt ville disse kommet fra en Option-tabell
+            Options = new List<Option>
+            {
+                new Option { OptionId = 1, Text = "Alternativ A" },
+                new Option { OptionId = 2, Text = "Alternativ B" },
+                new Option { OptionId = 3, Text = "Alternativ C" },
+                new Option { OptionId = 4, Text = "Alternativ D" }
+            },
+            SelectedOptionId = null // Initialiseres uten svar
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    public IActionResult Take(QuizTakeViewModel model)
+    {
+        // Denne metoden er foreløpig enkel, men vil senere håndtere
+        // 1. Validering av svaret (mot CorrectAnswer)
+        // 2. Oppdatering av score
+        // 3. Viderekobling til neste spørsmål eller resultat-side
+        
+        if (model.SelectedOptionId.HasValue)
+        {
+            // For MVP-demonstrasjon, bare viderekoble til samme side
+            // I et komplett prosjekt, vil du lagre svaret og gå til neste spørsmål/resultat
+            return RedirectToAction(nameof(Take), new { id = model.QuizId, questionNumber = model.QuestionNumber + 1 });
+        }
+        
+        // Hvis ingen alternativ er valgt
+        ModelState.AddModelError(string.Empty, "Vennligst velg et svar før du fortsetter.");
+        return View(model); 
+    }
+
 }

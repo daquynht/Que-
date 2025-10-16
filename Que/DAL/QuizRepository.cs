@@ -47,4 +47,13 @@ public class QuizRepository : IQuizRepository
         await _db.SaveChangesAsync();
         return true;
     }
+
+    public async Task<IEnumerable<Question>> GetQuestionsByQuizId(int quizId)
+    {
+        // Henter alle spørsmål hvor QuizId matcher den inngående parameteren
+        return await _db.Questions
+            .Where(q => q.QuizId == quizId)
+            .ToListAsync();
+    }
+    
 }
