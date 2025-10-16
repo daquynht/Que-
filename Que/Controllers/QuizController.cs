@@ -16,16 +16,23 @@ public class QuizController : Controller
 
     public async Task<IActionResult> Grid()
     {
-        var quizes = await _quizRepository.GetAll();
+        var quizes = (await _quizRepository.GetAll()).ToList();
         var viewModel = new QuizesViewModel(quizes, "Grid");
-        return View(quizes);
+        return View(viewModel);
     }
 
     public async Task<IActionResult> Table()
     {
-        var quizes = await _quizRepository.GetAll();
-        var quizesViewModel = new QuizesViewModel(quizes, "Table");
-        return View(quizes);
+        var quizes = (await _quizRepository.GetAll()).ToList();
+        var viewModel = new QuizesViewModel(quizes, "Table");
+        return View(viewModel);
+    }
+
+    public async Task<IActionResult> SeeQuizes()
+    {
+        var quizes = (await _quizRepository.GetAll()).ToList();
+        var viewModel = new QuizesViewModel(quizes, "SeeQuizes");
+        return View(viewModel);
     }
 
     [HttpGet]

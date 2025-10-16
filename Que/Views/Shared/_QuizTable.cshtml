@@ -1,4 +1,4 @@
-@model IEnumerable<Quiz>
+@model QuizesViewModel
 
 <div class="container">
     <table class='table table-striped'>
@@ -8,13 +8,13 @@
             <th>Description</th>
             <th>Actions</th>
         </tr>>
-        @foreach (var quiz in Model)
+        @foreach (var quiz in Model.Quizes)
         {
             <tr>
                 <td>@quiz.QuizId</td>
                 <td>
-                    <a asp-asp-controller="Quiz"
-                        asp-route-id="@quiz-QuizId">@quiz.Name</a>
+                    <a asp-controller="Quiz"
+                        asp-route-id="@quiz.QuizId">@quiz.Name</a>
                 </td>
                 <td>@quiz.Description</td>
                 <td>
