@@ -50,44 +50,25 @@
         </div>
     </form>
 
-    <!-- Quizzes Table -->
-    <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Difficulty</th>
-                <th>Questions</th>
-                <th>Time Limit (min)</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.Quizes != null && Model.Quizes.Any())
-            {
-                foreach (var quiz in Model.Quizes)
-                {
-                    <tr>
-                        <td>@quiz.Name</td>
-                        <td>@quiz.Category</td>
-                        <td>@quiz.Difficulty</td>
-                        <td>@(quiz.Questions?.Count ?? 0)</td>
-                        <td>@quiz.TimeLimit</td>
-                        <td>
-                            <a href="@Url.Action("Take", "Quiz", new { id = quiz.QuizId })" 
-                               class="btn btn-success btn-sm w-100">
-                                Start Quiz
-                            </a>
-                        </td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="6" class="text-center">No quizzes found. Try adjusting your search or filters.</td>
-                </tr>
-            }
-        </tbody>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var quiz in Model.Quizes)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="@quiz.ImageUrl" class="card-img-top" alt="@quiz.Name" />
+                    <div class="card-body">
+                        <h5 class="card-title">@quiz.Name</h5>
+                        <p class="card-text text-muted">@quiz.Description</p>
+                        <a asp-controller="Quiz" asp-action="Update" asp-route-id="@quiz.QuizId" class="btn btn-primary">
+                            Update Quiz
+                        </a>
+                        <a asp-controller="Quiz" asp-action="Delete" asp-route-id="@quiz.QuizId" class="btn btn-primary">
+                            Delete Quiz
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>  
     </table>
 </div>

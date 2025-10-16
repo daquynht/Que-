@@ -24,8 +24,11 @@
                     <td>@quiz.Name</td>
                     <td>@quiz.Description</td>
                     <td>
-                        <a asp-controller="Quiz" asp-action="Take" asp-route-id="@quiz.QuizId" class="btn btn-primary">
-                            Take Quiz
+                        <a asp-controller="Quiz" asp-action="Update" asp-route-id="@quiz.QuizId" class="btn btn-primary">
+                            Update Quiz
+                        </a>
+                        <a asp-controller="Quiz" asp-action="Delete" asp-route-id="@quiz.QuizId" class="btn btn-primary">
+                            Delete Quiz
                         </a>
                     </td>
                 </tr>
