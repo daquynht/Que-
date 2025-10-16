@@ -14,12 +14,6 @@ namespace Que.Controllers
             _context = context;
         }
 
-        /* public IActionResult Index()
-        {
-            var quizes = _context.Quizes.ToList(); // henter alle quizene fra databasen
-            return View(quizes);                   // sender dem til viewet
-        } */
-
         [HttpGet]
         public IActionResult Index(string selectedCategory)
         {
