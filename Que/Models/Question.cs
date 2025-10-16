@@ -12,6 +12,7 @@ namespace Que.Models
         public virtual Quiz? Quiz { get; set; }
 
         // Alternativer
-        public virtual List<Option> Options { get; set; } = new();
+        public virtual List<Option> Options { get; set; } = new List<Option>();
+        public int CorrectOptionIndex { get; set; }
     }
 }

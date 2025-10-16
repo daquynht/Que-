@@ -91,16 +91,21 @@ public class QuizController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Quiz quiz)
+    public async Task<IActionResult> Create(Quiz quiz, List<Question> questions)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid) return View(quiz);
+
+        // 1. Lagre quiz først slik at den får QuizId
+        await _quizRepository.Create(quiz);
+
+        // 2. Sett QuizId på hvert spørsmål og legg til i DB
+        foreach (var question in questions)
         {
-            await _quizRepository.Create(quiz);
-            // Redirect to CreateQuestions page for this quiz
-            return RedirectToAction("CreateQuestions", new { quizId = quiz.QuizId });
+            question.QuizId = quiz.QuizId;
+            await _quizRepository.AddQuestion(question);
         }
 
-        return View(quiz);
+        return RedirectToAction(nameof(Table));
     }
 
     [HttpGet]

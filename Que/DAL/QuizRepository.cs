@@ -55,5 +55,18 @@ public class QuizRepository : IQuizRepository
             .Where(q => q.QuizId == quizId)
             .ToListAsync();
     }
-    
+
+    public async Task AddQuestion(Question question)
+    {
+        _db.Questions.Add(question);
+        await _db.SaveChangesAsync();
+
+        // Alternativer legges til via Question.Options fordi de er navigasjonsegenskaper
+        foreach (var option in question.Options)
+        {
+            option.QuestionId = question.QuestionId;
+            _db.Option.Add(option);
+        }
+        await _db.SaveChangesAsync();
+    }
 }

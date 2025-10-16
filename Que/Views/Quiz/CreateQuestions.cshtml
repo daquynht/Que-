@@ -1,21 +1,61 @@
+@model Quiz
 @{
-    ViewBag.Title = "Create Questions";
+    ViewBag.Title = "Create New Quiz";
 }
 
-<h2>Create Questions for Quiz @ViewBag.QuizId</h2>
+<h2>Create New Quiz</h2>
 
-<p>Here you can add questions for your quiz.</p>
-
-<!-- Add your form for creating questions here -->
-<form method="post" action="/Question/Create">
-    <input type="hidden" name="QuizId" value="@ViewBag.QuizId" />
+<form asp-action="Create" method="post">
     <div class="form-group">
-        <label for="Text">Question Text</label>
-        <input type="text" name="Text" class="form-control" required />
+        <label asp-for="Name"></label><span class="text-danger">*</span>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
-    <!-- Add more fields for options if needed -->
-    <button type="submit" class="btn btn-primary">Add Question</button>
+    <div class="form-group">
+        <label asp-for="Description"></label><span class="text-danger">*</span>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="card">
+        <div class="card-header flex-between">
+            <h2><i class="bi bi-bullseye"></i> Questions</h2>
+            <button type="button" id="add-question-btn" class="btn-gradient">
+                <i class="bi bi-plus-lg"></i> Add Question
+            </button>
+        </div>
+
+        <div id="questions-container"></div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Quiz</button>
+    <a asp-action="Table" class="btn btn-secondary">Back to Table View</a>
 </form>
 
-<a asp-action="Table" asp-controller="Quiz" class="btn btn-secondary">Back to Quiz Table</a>
-<a asp-action="Table" asp-controller="Quiz" class="btn btn-info">See Quiz Questions (Table View)</a>
+@section Scripts {
+    <script>
+        let questionIndex = 0;
+
+        document.getElementById("add-question-btn").addEventListener("click", function () {
+            const container = document.getElementById("questions-container");
+
+            const questionHtml = `
+                <div class="question-item mb-3">
+                    <label>Question Text</label>
+                    <input type="text" name="Questions[${questionIndex}].Text" class="form-control" required />
+
+                    <label>Options</label>
+                    <input type="text" name="Questions[${questionIndex}].Options[0].Text" placeholder="Option A" class="form-control mt-1" required />
+                    <input type="text" name="Questions[${questionIndex}].Options[1].Text" placeholder="Option B" class="form-control mt-1" required />
+                    <input type="text" name="Questions[${questionIndex}].Options[2].Text" placeholder="Option C" class="form-control mt-1" required />
+                    <input type="text" name="Questions[${questionIndex}].Options[3].Text" placeholder="Option D" class="form-control mt-1" required />
+
+                    <label>Correct Option (0-3)</label>
+                    <input type="number" name="Questions[${questionIndex}].CorrectOptionIndex" class="form-control mt-1" min="0" max="3" required />
+                </div>
+            `;
+            container.insertAdjacentHTML("beforeend", questionHtml);
+            questionIndex++;
+        });
+    </script>
+}
