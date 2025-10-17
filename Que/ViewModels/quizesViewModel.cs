@@ -1,4 +1,5 @@
 using Que.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Que.ViewModels
 {
@@ -13,8 +14,8 @@ namespace Que.ViewModels
                 };
         }
 
-        public Quiz Quiz { get; set; }
-        public List<QuestionsViewModel> Questions { get; set; }
+        public Quiz Quiz { get; set; } = new Quiz();
+        public List<QuestionsViewModel> Questions { get; set; } = new List<QuestionsViewModel>();
 
 
         public IEnumerable<Quiz> Quizes { get; set; } = new List<Quiz>();
@@ -32,5 +33,21 @@ namespace Que.ViewModels
             CurrentViewName = currentViewName;
         }
 
+        public List<SelectListItem> DifficultyOptions => new List<SelectListItem>
+        {
+            new SelectListItem("Easy", "Easy"),
+            new SelectListItem("Medium", "Medium"),
+            new SelectListItem("Hard", "Hard")
+        };
+
+        public List<SelectListItem> CategoryOptions => new List<SelectListItem>
+        {
+            new SelectListItem("Trivia", "Trivia"),
+            new SelectListItem("History", "History"),
+            new SelectListItem("Geography", "Geography"),
+            new SelectListItem("Math", "Math"),
+            new SelectListItem("Science", "Science"),
+            new SelectListItem("Sports", "Sports")
+        };
     }
 }

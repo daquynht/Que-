@@ -1,19 +1,137 @@
-@model Quiz
+@model Que.ViewModels.QuizesViewModel
+
+@{
+    ViewData["Title"] = "Update Quiz";
+    var difficulties = new List<string> { "Easy", "Medium", "Hard" };
+    var categories = new List<string> { "Trivia", "History", "Geography", "Math", "Science", "Sports" };
+}
 
 <h2>Update Quiz</h2>
 
-<form asp-action="Update">
-    <input type="hidden" asp-for="QuizId" />
+<form asp-action="Update" method="post">
+    <input type="hidden" asp-for="Quiz.QuizId" />
+
     <div class="form-group">
-        <label asp-for="Name"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+        <label asp-for="Quiz.Name"></label>
+        <input asp-for="Quiz.Name" class="form-control" />
+        <span asp-validation-for="Quiz.Name" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="Description"></label>
-        <input asp-for="Description" class="form-control" />
-        <span asp-validation-for="Description" class="text-danger"></span>
+        <label asp-for="Quiz.Description"></label>
+        <textarea asp-for="Quiz.Description" class="form-control"></textarea>
+        <span asp-validation-for="Quiz.Description" class="text-danger"></span>
     </div>
+
+    <div class="form-group">
+        <label asp-for="Quiz.Category"></label>
+        <select asp-for="Quiz.Category" class="form-control">
+            @foreach (var cat in categories)
+            {
+                <option value="@cat" selected="@(Model.Quiz.Category == cat ? "selected" : null)">
+                    @cat
+                </option>
+            }
+        </select>
+        <span asp-validation-for="Quiz.Category" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Quiz.Difficulty"></label>
+        <select asp-for="Quiz.Difficulty" class="form-control">
+            @foreach (var diff in difficulties)
+            {
+                <option value="@diff" selected="@(Model.Quiz.Difficulty == diff ? "selected" : null)">
+                    @diff
+                </option>
+            }
+        </select>
+        <span asp-validation-for="Quiz.Difficulty" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Quiz.TimeLimit"></label>
+        <input asp-for="Quiz.TimeLimit" type="number" class="form-control" min="0" />
+        <span asp-validation-for="Quiz.TimeLimit" class="text-danger"></span>
+    </div>
+
+    <h4>Questions</h4>
+    @for (int i = 0; i < Model.Questions.Count; i++)
+    {
+        <div class="border p-2 mb-3">
+            <input type="hidden" asp-for="Questions[@i].QuestionId" />
+
+            <div class="form-group">
+                <label asp-for="Questions[@i].Text">Question Text</label>
+                <input asp-for="Questions[@i].Text" class="form-control" />
+                <span asp-validation-for="Questions[@i].Text" class="text-danger"></span>
+            </div>
+
+            <div class="form-check mb-2">
+                <input asp-for="Questions[@i].AllowMultipleAnswers" class="form-check-input" />
+                <label asp-for="Questions[@i].AllowMultipleAnswers" class="form-check-label">Allow multiple answers</label>
+            </div>
+
+            <h5>Options</h5>
+            @for (int j = 0; j < Model.Questions[i].Options.Count; j++)
+            {
+                <div class="form-group">
+                    <input type="hidden" asp-for="Questions[@i].Options[@j].OptionId" />
+
+                    <label>Option Text</label>
+                    <input asp-for="Questions[@i].Options[@j].Text" class="form-control" />
+
+                    <div class="form-check">
+                        <input asp-for="Questions[@i].Options[@j].IsCorrect" class="form-check-input" />
+                        <label class="form-check-label">Correct</label>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
     <button type="submit" class="btn btn-primary">Save Changes</button>
     <a asp-action="Table" class="btn btn-secondary">Cancel</a>
 </form>
+
+@section Scripts {
+    <script>
+        let questionIndex = @Model.Questions.Count;
+
+        document.getElementById("add-question-btn").addEventListener("click", function () {
+            const container = document.getElementById("questions-container");
+            const html = `
+                <div class="question-block border p-3 mb-3">
+                    <input type="hidden" name="Questions[${questionIndex}].QuestionId" value="0" />
+
+                    <div class="form-group">
+                        <label>Question Text</label>
+                        <input name="Questions[${questionIndex}].Text" class="form-control" />
+                    </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" name="Questions[${questionIndex}].AllowMultipleAnswers" class="form-check-input" />
+                        <label class="form-check-label">Allow Multiple Answers</label>
+                    </div>
+
+                    <h5>Options</h5>
+                    ${[0,1,2,3].map(j => `
+                        <div class="option-block mb-2">
+                            <input type="hidden" name="Questions[${questionIndex}].Options[${j}].OptionId" value="0" />
+                            <div class="form-group">
+                                <label>Option Text</label>
+                                <input name="Questions[${questionIndex}].Options[${j}].Text" class="form-control" />
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" name="Questions[${questionIndex}].Options[${j}].IsCorrect" class="form-check-input" />
+                                <label class="form-check-label">Is Correct</label>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            container.insertAdjacentHTML("beforeend", html);
+            questionIndex++;
+        });
+    </script>
+}

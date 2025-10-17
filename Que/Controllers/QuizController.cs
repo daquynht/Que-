@@ -92,66 +92,103 @@ public class QuizController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(QuizesViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var quiz = new Quiz
+        {
+            Name = model.Quiz.Name,
+            Description = model.Quiz.Description,
+            Questions = model.Questions.Select(q => new Question
+            {
+                Text = q.Text,
+                AllowMultipleAnswers = q.AllowMultipleAnswers,
+                Options = q.Options.Select(o => new Option
+                {
+                    Text = o.Text,
+                    IsCorrect = o.IsCorrect
+                }).ToList()
+            }).ToList()
+        };
+
+        await _quizRepository.Create(quiz);
+        return RedirectToAction("Table");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Update(int id)
+    {
+        var quiz = await _quizRepository.GetQuizById(id); // <-- await
+        if (quiz == null)
+            return NotFound();
+
+        var viewModel = new QuizesViewModel
+        {
+            Quiz = quiz,
+            Questions = quiz.Questions.Select(q => new QuestionsViewModel
+            {
+                QuestionId = q.QuestionId,
+                Text = q.Text,
+                AllowMultipleAnswers = q.AllowMultipleAnswers,
+                Options = q.Options.Select(o => new OptionsViewModel
+                {
+                    OptionId = o.OptionId,
+                    Text = o.Text,
+                    IsCorrect = o.IsCorrect
+                }).ToList()
+            }).ToList()
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(QuizesViewModel model)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        // 1. Lagre Quiz først
-        await _quizRepository.Create(model.Quiz);
+        var quizToUpdate = await _quizRepository.GetQuizByIdAsync(model.Quiz.QuizId);
+        if (quizToUpdate == null)
+            return NotFound();
 
-        // 2. Lagre hvert spørsmål
-        foreach (var qvm in model.Questions)
+        // Oppdater quiz felter
+        quizToUpdate.Name = model.Quiz.Name;
+        quizToUpdate.Description = model.Quiz.Description;
+        quizToUpdate.Category = model.Quiz.Category;
+        quizToUpdate.Difficulty = model.Quiz.Difficulty;
+        quizToUpdate.TimeLimit = model.Quiz.TimeLimit;
+
+        await _quizRepository.UpdateQuizAsync(quizToUpdate);
+
+        // Oppdater spørsmål og alternativer
+        foreach (var questionVM in model.Questions)
         {
-            var question = new Question
+            var question = await _quizRepository.GetQuestionByIdAsync(questionVM.QuestionId);
+            if (question != null)
             {
-                Text = qvm.Text,
-                AllowMultipleAnswers = qvm.AllowMultipleAnswers,
-                QuizId = model.Quiz.QuizId
-            };
+                question.Text = questionVM.Text;
+                question.AllowMultipleAnswers = questionVM.AllowMultipleAnswers;
+                await _quizRepository.UpdateQuestionAsync(question);
 
-            await _quizRepository.AddQuestion(question);
-
-            // 3. Lagre alternativer for spørsmålet
-            foreach (var ovm in qvm.Options)
-            {
-                var option = new Option
+                foreach (var optionVM in questionVM.Options)
                 {
-                    Text = ovm.Text,
-                    QuestionId = question.QuestionId
-                };
-
-                await _quizRepository.AddOption(option);
+                    var option = await _quizRepository.GetOptionByIdAsync(optionVM.OptionId);
+                    if (option != null)
+                    {
+                        option.Text = optionVM.Text;
+                        option.IsCorrect = optionVM.IsCorrect;
+                        await _quizRepository.UpdateOptionAsync(option);
+                    }
+                }
             }
         }
 
-        return RedirectToAction(nameof(Table));
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Update(int id)
-    {
-        var quiz = await _quizRepository.GetQuizById(id);
-        if (quiz == null)
-        {
-            return NotFound();
-        }
-        return View(quiz);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Update(Quiz quiz)
-    {
-        if (ModelState.IsValid)
-        {
-            await _quizRepository.Update(quiz);
-            return RedirectToAction(nameof(Table));
-        }
-
-        return View(quiz);
+        return RedirectToAction("Table");
     }
 
     [HttpGet]

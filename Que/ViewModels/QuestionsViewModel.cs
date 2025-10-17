@@ -7,6 +7,12 @@ namespace Que.ViewModels
 {
     public class QuestionsViewModel
     {
+        public int QuestionId { get; set; }
+        public string Text { get; set; } = string.Empty;
+        public bool AllowMultipleAnswers { get; set; }
+
+        public List<OptionsViewModel> Options { get; set; } = new List<OptionsViewModel>();
+        public List<int> SelectedOptions { get; set; }
         public QuestionsViewModel()
         {
             Options = new List<OptionsViewModel>
@@ -18,17 +24,5 @@ namespace Que.ViewModels
             };
             SelectedOptions = new List<int>();
         }
-
-        [Required]
-            public string Text { get; set; }
-
-            public bool AllowMultipleAnswers { get; set; }
-
-            public List<OptionsViewModel> Options { get; set; }
-
-            /// <summary>
-            /// Brukes for binding av valgt(e) alternativ(er)
-            /// </summary>
-            public List<int> SelectedOptions { get; set; }
     }
 }
