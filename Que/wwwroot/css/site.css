@@ -23,11 +23,19 @@ footer {
 } */
 
 /* Generell stil for hele applikasjonen */
-body {
+html, body {
     font-family: 'Poppins', sans-serif;
     background-color: #ffffff; /* Lys pastell lilla/rosa bakgrunn */
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+ }
+
+/* Main tar opp alt av plass mellom header og footer */
+main {
+    flex: 1 0 auto;
 }
 
 /* --- Navigasjonsbar (custom-navbar) --- */
@@ -43,6 +51,7 @@ body {
     color: white !important;
     font-weight: 600;
 }
+
 
 /* TITTEL */
 .main-title {
@@ -71,11 +80,13 @@ body {
     text-align: center;
     padding: 15px 10px; 
     /* Veldig viktig: Fjerner margin-top som kan skape store hull */
-    margin-top: 0; 
+    margin-top: auto; 
+    flex-shrink: 0;
+    width: 100%;
 }
 
 .custom-footer a {
-    color: #FDCFFA; /* Lys lenkefarge */
+    color: #fdcffa; /* Lys lenkefarge */
     text-decoration: none;
     font-weight: 500;
 }

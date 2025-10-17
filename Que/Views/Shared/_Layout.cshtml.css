@@ -39,15 +39,15 @@ a.navbar-brand {
     line-height: inherit;
   }
   
-  .footer {
+  /*
+  .footer { 
     position: absolute;
     bottom: 0;
     width: 100%;
     white-space: nowrap;
     line-height: 60px;
-  }
+  }*/
+
   .custom-footer {
-    /* Fjerner posisjonering for å la footeren ligge rett under innholdet */
-    position: relative; /* Eller du kan fjerne linjen helt */
     width: 100%;
   }
