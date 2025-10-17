@@ -150,3 +150,20 @@ main {
     object-fit: cover;
     height: 150px; 
 }
+
+/* TABLE SIDE*/
+.table {
+    border: 2px solid #9B5DE0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table th {
+    background-color: #4E56C0;
+    color: white;
+    border-color: #9B5DE0;
+}
+
+.table td {
+    border-color: #E0C4F6;
+}
