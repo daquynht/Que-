@@ -119,7 +119,7 @@ public class QuizController : Controller
     [HttpGet]
     public async Task<IActionResult> Update(int id)
     {
-        var quiz = await _quizRepository.GetQuizById(id); // <-- await
+        var quiz = await _quizRepository.GetQuizWithDetailsAsync(id); // <-- await
         if (quiz == null)
             return NotFound();
 
@@ -152,42 +152,41 @@ public class QuizController : Controller
             return View(model);
         }
 
-        var quizToUpdate = await _quizRepository.GetQuizByIdAsync(model.Quiz.QuizId);
-        if (quizToUpdate == null)
-            return NotFound();
-
-        // Oppdater quiz felter
-        quizToUpdate.Name = model.Quiz.Name;
-        quizToUpdate.Description = model.Quiz.Description;
-        quizToUpdate.Category = model.Quiz.Category;
-        quizToUpdate.Difficulty = model.Quiz.Difficulty;
-        quizToUpdate.TimeLimit = model.Quiz.TimeLimit;
-
-        await _quizRepository.UpdateQuizAsync(quizToUpdate);
-
-        // Oppdater spørsmål og alternativer
-        foreach (var questionVM in model.Questions)
+       var updatedQuiz = new Quiz
         {
-            var question = await _quizRepository.GetQuestionByIdAsync(questionVM.QuestionId);
-            if (question != null)
+            // Behold QuizId for å vite hvilken quiz som skal oppdateres
+            QuizId = model.Quiz.QuizId, 
+            Name = model.Quiz.Name,
+            Description = model.Quiz.Description,
+            Category = model.Quiz.Category,
+            Difficulty = model.Quiz.Difficulty,
+            TimeLimit = model.Quiz.TimeLimit,
+            
+            // Mapp Questions og Options. ID-ene er kritiske for synkroniseringen i DAL.
+            Questions = model.Questions.Select(qvm => new Question
             {
-                question.Text = questionVM.Text;
-                question.AllowMultipleAnswers = questionVM.AllowMultipleAnswers;
-                await _quizRepository.UpdateQuestionAsync(question);
-
-                foreach (var optionVM in questionVM.Options)
+                // QuestionId = 0 betyr nytt spørsmål
+                QuestionId = qvm.QuestionId, 
+                Text = qvm.Text,
+                AllowMultipleAnswers = qvm.AllowMultipleAnswers,
+                Options = qvm.Options.Select(ovm => new Option
                 {
-                    var option = await _quizRepository.GetOptionByIdAsync(optionVM.OptionId);
-                    if (option != null)
-                    {
-                        option.Text = optionVM.Text;
-                        option.IsCorrect = optionVM.IsCorrect;
-                        await _quizRepository.UpdateOptionAsync(option);
-                    }
-                }
-            }
-        }
+                    // OptionId = 0 betyr nytt alternativ
+                    OptionId = ovm.OptionId, 
+                    Text = ovm.Text,
+                    IsCorrect = ovm.IsCorrect
+                }).ToList()
+            }).ToList()
+        };
 
+        var success = await _quizRepository.UpdateQuizFullAsync(updatedQuiz);
+        
+        if (!success)
+        {
+            // Håndter feil fra Repository
+            ModelState.AddModelError(string.Empty, "En feil oppstod under lagring av endringene.");
+            return View(model);
+        }
         return RedirectToAction("Table");
     }
 

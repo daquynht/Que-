@@ -42,4 +42,9 @@ public interface IQuizRepository
     Task<bool> Delete(int id);
     Task<List<Question>> GetQuestionsByQuizId(int quizId);
     Task<List<Quiz>> GetAll();
+
+    //Oppdatere quiz metoden etter å ha lagt inn spørsmål:
+    // I IQuizRepository.cs
+    Task<Quiz?> GetQuizWithDetailsAsync(int id); // Må hente Questions og Options
+    Task<bool> UpdateQuizFullAsync(Quiz updatedQuiz);
 }

@@ -55,10 +55,14 @@
         <span asp-validation-for="Quiz.TimeLimit" class="text-danger"></span>
     </div>
 
-    <h4>Questions</h4>
+    <h4 class="d-inline-block">Questions</h4>
+    <button type="button" id="add-question-btn" class="btn btn-secondary btn-sm mb-3">Add Question</button>
+
+    <div id="questions-container"> @* ENDRET: ID er nå "questions-container" *@
     @for (int i = 0; i < Model.Questions.Count; i++)
     {
-        <div class="border p-2 mb-3">
+        <div class="question-block border p-2 m-3" data-index="@i">
+        <button type="button" class="btn btn-danger btn-sm remove-question-btn float-end">Remove</button>
             <input type="hidden" asp-for="Questions[@i].QuestionId" />
 
             <div class="form-group">
@@ -75,7 +79,7 @@
             <h5>Options</h5>
             @for (int j = 0; j < Model.Questions[i].Options.Count; j++)
             {
-                <div class="form-group">
+                <div class="form-group option-block"> @* Lagt til "option-block" for konsistens *@
                     <input type="hidden" asp-for="Questions[@i].Options[@j].OptionId" />
 
                     <label>Option Text</label>
@@ -89,6 +93,7 @@
             }
         </div>
     }
+    </div> @* Lukker questions-container div *@
 
     <button type="submit" class="btn btn-primary">Save Changes</button>
     <a asp-action="Table" class="btn btn-secondary">Cancel</a>
@@ -96,12 +101,32 @@
 
 @section Scripts {
     <script>
-        let questionIndex = @Model.Questions.Count;
+        let questionIndex = @Model.Questions.Count; // Holder styr på den neste ledige indeksen
 
+        // KORRIGERT: Hjelpefunksjon for å generere HTML for et nytt alternativ (med template literals)
+        function getOptionHtml(questionIdx, optionIdx) {
+            return `
+            <div class="form-group option-block">
+                <input type="hidden" name="Questions[${questionIdx}].Options[${optionIdx}].OptionId" value="0" />
+                    
+                    <label>Option Text</label>
+                    <input name="Questions[${questionIdx}].Options[${optionIdx}].Text" class="form-control" />
+                    
+                    <div class="form-check">
+                        <input type="checkbox" name="Questions[${questionIdx}].Options[${optionIdx}].IsCorrect" class="form-check-input" value="true" />
+                        <label class="form-check-label">Is Correct</label>
+                    </div>
+                </div>
+            `; // Viktig: Bruk bakovervendt apostrof for å returnere strengen
+        }
+
+        // Add Question funksjon
         document.getElementById("add-question-btn").addEventListener("click", function () {
             const container = document.getElementById("questions-container");
             const html = `
-                <div class="question-block border p-3 mb-3">
+                <div class="question-block border p-3 mb-3" data-index="${questionIndex}"> 
+                    <button type="button" class="btn btn-danger btn-sm remove-question-btn float-end">Remove</button> @* KORRIGERT: Knappeplassering og syntaks *@
+
                     <input type="hidden" name="Questions[${questionIndex}].QuestionId" value="0" />
 
                     <div class="form-group">
@@ -110,28 +135,59 @@
                     </div>
 
                     <div class="form-check">
-                        <input type="checkbox" name="Questions[${questionIndex}].AllowMultipleAnswers" class="form-check-input" />
+                        <input type="checkbox" name="Questions[${questionIndex}].AllowMultipleAnswers" class="form-check-input" value="true"/>
                         <label class="form-check-label">Allow Multiple Answers</label>
                     </div>
 
                     <h5>Options</h5>
-                    ${[0,1,2,3].map(j => `
-                        <div class="option-block mb-2">
-                            <input type="hidden" name="Questions[${questionIndex}].Options[${j}].OptionId" value="0" />
-                            <div class="form-group">
-                                <label>Option Text</label>
-                                <input name="Questions[${questionIndex}].Options[${j}].Text" class="form-control" />
-                            </div>
-                            <div class="form-check">
-                                <input type="checkbox" name="Questions[${questionIndex}].Options[${j}].IsCorrect" class="form-check-input" />
-                                <label class="form-check-label">Is Correct</label>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
+                    ${getOptionHtml(questionIndex, 0)}
+                    ${getOptionHtml(questionIndex, 1)}
+                    ${getOptionHtml(questionIndex, 2)}
+                    ${getOptionHtml(questionIndex, 3)}
+                </div> 
             `;
             container.insertAdjacentHTML("beforeend", html);
             questionIndex++;
         });
+
+        // ------------------------------------------------------------------
+        // --- NY FUNKSJONALITET: Fjerne spørsmål og reindeksere ---
+        // ------------------------------------------------------------------
+
+        // Legg til en event lytter på containeren for å fange klikk på "Remove"-knapper
+        document.getElementById("questions-container").addEventListener("click", function (e) {
+            // Sjekk om klikket kom fra en knapp med klassen 'remove-question-btn'
+            if (e.target.classList.contains("remove-question-btn")) {
+                // Finn nærmeste overordnede element som er spørsmålsblokken
+                const questionBlock = e.target.closest(".question-block");
+                if (questionBlock) {
+                    questionBlock.remove(); // Fjerner elementet fra DOM
+                    reindexQuestions(); // Reindekser de resterende spørsmålene
+                }
+            }
+        });
+
+        /**
+         * Sikrer at Questions[i].PropertyName er fortløpende (0, 1, 2, ...)
+         * for at ASP.NET Model Binder skal binde til en List<Question>.
+         */
+        function reindexQuestions() {
+            const questions = document.querySelectorAll("#questions-container > .question-block");
+            
+            questions.forEach((q, index) => {
+                // Oppdater data-index for fremtidig bruk
+                q.dataset.index = index;
+
+                // Oppdater alle name-attributter i spørsmålsblokken
+                q.querySelectorAll('[name^="Questions["]').forEach(input => {
+                     const nameAttr = input.getAttribute('name');
+                     
+                     // Bytt ut den gamle indeksen i name-attributtet med den nye
+                     input.name = nameAttr.replace(/Questions\[\d+\]/g, `Questions[${index}]`);
+                });
+            });
+            // Oppdater questionIndex til å være lengden av den nye listen
+            questionIndex = questions.length;
+        }
     </script>
 }
