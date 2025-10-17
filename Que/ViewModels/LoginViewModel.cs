@@ -1,4 +1,4 @@
-// ViewModels/LoginViewModel.cs
+using Que.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Que.ViewModels

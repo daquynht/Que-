@@ -11,4 +11,5 @@ public interface IQuizRepository
     Task<bool> Delete(int id);
     Task<IEnumerable<Question>> GetQuestionsByQuizId(int quizId);
     Task AddQuestion(Question question);
+    Task AddOption(Option option);
 }

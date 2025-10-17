@@ -69,4 +69,10 @@ public class QuizRepository : IQuizRepository
         }
         await _db.SaveChangesAsync();
     }
+
+    public async Task AddOption(Option option)
+    {
+        _db.Options.Add(option);
+        await _db.SaveChangesAsync();
+    }
 }

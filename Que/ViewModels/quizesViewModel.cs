@@ -4,6 +4,19 @@ namespace Que.ViewModels
 {
     public class QuizesViewModel
     {
+        public QuizesViewModel()
+        {
+            Quiz = new Quiz();
+                Questions = new List<QuestionsViewModel>
+                {
+                    new QuestionsViewModel() // Starter med 1 spørsmål
+                };
+        }
+
+        public Quiz Quiz { get; set; }
+        public List<QuestionsViewModel> Questions { get; set; }
+
+
         public IEnumerable<Quiz> Quizes { get; set; } = new List<Quiz>();
         public string? CurrentViewName { get; set; }
 
@@ -19,6 +32,5 @@ namespace Que.ViewModels
             CurrentViewName = currentViewName;
         }
 
-        public QuizesViewModel() { }
     }
 }

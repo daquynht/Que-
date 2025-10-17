@@ -87,52 +87,46 @@ public class QuizController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        var quiz = new Quiz
-        {
-            Questions = new List<Question>
-            {
-                new Question
-                {
-                    Options = new List<Option> { new Option(), new Option(), new Option(), new Option() }
-                },
-                new Question
-                {
-                    Options = new List<Option> { new Option(), new Option(), new Option(), new Option() }
-                }
-            }
-        };
-
-        // Viktig: sørg for at QuestionId = 0 og OptionId = 0
-        foreach (var question in quiz.Questions)
-        {
-            question.QuestionId = 0;
-            foreach (var option in question.Options)
-            {
-                option.OptionId = 0;
-            }
-        }
-
-        return View(quiz);
+        var model = new QuizesViewModel();
+        return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Quiz quiz)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(QuizesViewModel model)
     {
-        if (!ModelState.IsValid) return View(quiz);
-
-        // Nullstill ID-er for sikkerhet
-        foreach (var question in quiz.Questions)
+        if (!ModelState.IsValid)
         {
-            question.QuestionId = 0;
-            question.QuizId = 0;
-            foreach (var option in question.Options)
-            {
-                option.OptionId = 0;
-                option.QuestionId = 0;
-            }
+            return View(model);
         }
 
-        await _quizRepository.Create(quiz); // Her lagres Quiz med spørsmål og alternativer
+        // 1. Lagre Quiz først
+        await _quizRepository.Create(model.Quiz);
+
+        // 2. Lagre hvert spørsmål
+        foreach (var qvm in model.Questions)
+        {
+            var question = new Question
+            {
+                Text = qvm.Text,
+                AllowMultipleAnswers = qvm.AllowMultipleAnswers,
+                QuizId = model.Quiz.QuizId
+            };
+
+            await _quizRepository.AddQuestion(question);
+
+            // 3. Lagre alternativer for spørsmålet
+            foreach (var ovm in qvm.Options)
+            {
+                var option = new Option
+                {
+                    Text = ovm.Text,
+                    QuestionId = question.QuestionId
+                };
+
+                await _quizRepository.AddOption(option);
+            }
+        }
 
         return RedirectToAction(nameof(Table));
     }
