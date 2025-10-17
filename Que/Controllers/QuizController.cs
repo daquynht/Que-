@@ -3,6 +3,9 @@ using Microsoft.Extensions.Options;
 using Que.DAL;
 using Que.Models;
 using Que.ViewModels;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Que.Controllers;
 
@@ -28,54 +31,6 @@ public class QuizController : Controller
         var viewModel = new QuizesViewModel(quizes, "Table");
         return View(viewModel);
     }
-
-    /* public async Task<IActionResult> Table(string searchTerm, string category, string difficulty, string questionCount)
-    {
-        var quizes = await _quizRepository.GetAll();
-
-        if (!string.IsNullOrWhiteSpace(searchTerm))
-        {
-            searchTerm = searchTerm.ToLower();
-            quizes = quizes.Where(q =>
-                (q.Name != null && q.Name.ToLower().Contains(searchTerm)) ||
-                (q.Description != null && q.Description.ToLower().Contains(searchTerm)) ||
-                (q.Category != null && q.Category.ToLower().Contains(searchTerm))
-            ).ToList();
-        }
-
-        if (!string.IsNullOrEmpty(category) && category != "all")
-            quizes = quizes.Where(q => q.Category == category).ToList();
-
-        if (!string.IsNullOrEmpty(difficulty) && difficulty != "all")
-            quizes = quizes.Where(q => q.Difficulty == difficulty).ToList();
-
-        if (!string.IsNullOrEmpty(questionCount) && questionCount != "all")
-        {
-            var ranges = new Dictionary<string, (int min, int max)>
-            {
-                { "1-5", (1, 5) },
-                { "6-10", (6, 10) },
-                { "11-15", (11, 15) },
-                { "16-20", (16, 20) },
-                { "20+", (21, int.MaxValue) }
-            };
-
-            if (ranges.TryGetValue(questionCount, out var range))
-            {
-                quizes = quizes.Where(q => q.Questions.Count >= range.min && q.Questions.Count <= range.max).ToList();
-            }
-        }
-       
-        var quizesViewModel = new QuizesViewModel(quizes, "Table")
-        {
-            SearchTerm = searchTerm,
-            Category = category,
-            Difficulty = difficulty,
-            QuestionCount = questionCount
-        };
-
-        return View(quizesViewModel);
-    } */
 
     public async Task<IActionResult> SeeQuizes()
     {
@@ -119,7 +74,7 @@ public class QuizController : Controller
     [HttpGet]
     public async Task<IActionResult> Update(int id)
     {
-        var quiz = await _quizRepository.GetQuizWithDetailsAsync(id); // <-- await
+        var quiz = await _quizRepository.GetQuizWithDetailsAsync(id);
         if (quiz == null)
             return NotFound();
 
@@ -153,37 +108,31 @@ public class QuizController : Controller
         }
 
        var updatedQuiz = new Quiz
-        {
-            // Behold QuizId for å vite hvilken quiz som skal oppdateres
-            QuizId = model.Quiz.QuizId, 
+       {
+            QuizId = model.Quiz.QuizId,
             Name = model.Quiz.Name,
             Description = model.Quiz.Description,
             Category = model.Quiz.Category,
             Difficulty = model.Quiz.Difficulty,
             TimeLimit = model.Quiz.TimeLimit,
-            
-            // Mapp Questions og Options. ID-ene er kritiske for synkroniseringen i DAL.
             Questions = model.Questions.Select(qvm => new Question
             {
-                // QuestionId = 0 betyr nytt spørsmål
-                QuestionId = qvm.QuestionId, 
+                QuestionId = qvm.QuestionId,
                 Text = qvm.Text,
                 AllowMultipleAnswers = qvm.AllowMultipleAnswers,
                 Options = qvm.Options.Select(ovm => new Option
                 {
-                    // OptionId = 0 betyr nytt alternativ
-                    OptionId = ovm.OptionId, 
+                    OptionId = ovm.OptionId,
                     Text = ovm.Text,
                     IsCorrect = ovm.IsCorrect
                 }).ToList()
             }).ToList()
-        };
+       };
 
         var success = await _quizRepository.UpdateQuizFullAsync(updatedQuiz);
-        
+
         if (!success)
         {
-            // Håndter feil fra Repository
             ModelState.AddModelError(string.Empty, "En feil oppstod under lagring av endringene.");
             return View(model);
         }
@@ -208,86 +157,159 @@ public class QuizController : Controller
         return RedirectToAction(nameof(Table));
     }
 
-
+    // ========================
+    // TAKE (GET): viser ett spørsmål av gangen
+    // URL: /Quiz/Take/{id}?questionNumber=1
+    // ========================
     [HttpGet]
-    public async Task<IActionResult> Take(int id) // 'id' er QuizId
+    public async Task<IActionResult> Take(int id, int questionNumber = 1)
     {
-        // 1. Henter quizen og dens spørsmål
+        // Hent quiz + spørsmål fra repo
         var quiz = await _quizRepository.GetQuizById(id);
-        
-        // *DEN KRITISKE LINJEN:* Kaller metoden du implementerte
-        var questions = await _quizRepository.GetQuestionsByQuizId(id); 
+        var questions = await _quizRepository.GetQuestionsByQuizId(id);
 
         if (quiz == null || questions == null || !questions.Any())
         {
             return NotFound("Quizen eller dens spørsmål ble ikke funnet.");
         }
 
-        // 2. Velger det første spørsmålet (for MVP)
-        var firstQuestion = questions.First();
+        // Hvis questionNumber utenfor range -> vis resultat
+        if (questionNumber < 1 || questionNumber > questions.Count)
+        {
+            var key = $"score_{id}";
+            int score = 0;
+            if (TempData.TryGetValue(key, out var tmp) && tmp is int s)
+            {
+                score = s;
+            }
+            TempData.Remove(key);
+            return RedirectToAction(nameof(Result), new { id = id, score = score });
+        }
 
-        // 3. Setter opp ViewModel for visning
+        var question = questions[questionNumber - 1];
+
         var viewModel = new QuizTakeViewModel
         {
             QuizId = quiz.QuizId,
             QuizName = quiz.Name ?? "Ukjent Quiz",
-            QuestionNumber = 1, // Start med spørsmål 1
-            QuestionText = firstQuestion.Text,
-            
-            // Hardkoder alternativer for MVP (som vi avtalte)
-            // I et fullstendig prosjekt ville disse kommet fra en Option-tabell
-            Options = new List<Option>
+            QuestionNumber = questionNumber,
+            TotalQuestions = questions.Count,
+            QuestionId = question.QuestionId,
+            QuestionText = question.Text,
+            Options = question.Options?.Select(o => new Option
             {
-                new Option { OptionId = 1, Text = "Alternativ A" },
-                new Option { OptionId = 2, Text = "Alternativ B" },
-                new Option { OptionId = 3, Text = "Alternativ C" },
-                new Option { OptionId = 4, Text = "Alternativ D" }
-            },
-            SelectedOptionId = null // Initialiseres uten svar
+                OptionId = o.OptionId,
+                Text = o.Text,
+                IsCorrect = o.IsCorrect
+            }).ToList() ?? new List<Option>(),
+            SelectedOptionId = null
         };
 
         return View(viewModel);
     }
 
+    // ========================
+    // TAKE (POST): tar imot svaret, evaluerer og går videre
+    // ========================
     [HttpPost]
-    public IActionResult Take(QuizTakeViewModel model)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Take(QuizTakeViewModel model)
     {
-        // Denne metoden er foreløpig enkel, men vil senere håndtere
-        // 1. Validering av svaret (mot CorrectAnswer)
-        // 2. Oppdatering av score
-        // 3. Viderekobling til neste spørsmål eller resultat-side
-        
-        if (model.SelectedOptionId.HasValue)
+        // Hent spørsmål fra repo
+        var questions = await _quizRepository.GetQuestionsByQuizId(model.QuizId);
+        if (questions == null || !questions.Any())
         {
-            // For MVP-demonstrasjon, bare viderekoble til samme side
-            // I et komplett prosjekt, vil du lagre svaret og gå til neste spørsmål/resultat
-            return RedirectToAction(nameof(Take), new { id = model.QuizId, questionNumber = model.QuestionNumber + 1 });
-        }
-        
-        // Hvis ingen alternativ er valgt
-        ModelState.AddModelError(string.Empty, "Vennligst velg et svar før du fortsetter.");
-        return View(model); 
-    }
-
-    [HttpPost]
-    public IActionResult AddQuestion(Quiz quiz, List<Question> questions)
-    {
-        // Først beholder eksisterende spørsmål fra skjemaet
-        if (questions != null)
-        {
-            quiz.Questions = questions;
+            return NotFound();
         }
 
-        // Legg til nytt spørsmål med 4 tomme alternativer
-        quiz.Questions.Add(new Question
+        // Finn gjeldende spørsmål
+        var currentQuestion = questions.FirstOrDefault(q => q.QuestionId == model.QuestionId);
+        if (currentQuestion == null)
         {
-            Options = new List<Option>
+            ModelState.AddModelError(string.Empty, "Spørsmålet finnes ikke.");
+            return View(model);
+        }
+
+        // Hvis ingen svar valgt -> vis samme view med feilmelding (repoppuler options)
+        if (!model.SelectedOptionId.HasValue)
+        {
+            ModelState.AddModelError(string.Empty, "Vennligst velg et svar før du fortsetter.");
+            model.Options = currentQuestion.Options?.Select(o => new Option
             {
-                new Option(), new Option(), new Option(), new Option()
-            }
-        });
+                OptionId = o.OptionId,
+                Text = o.Text,
+                IsCorrect = o.IsCorrect
+            }).ToList() ?? new List<Option>();
+            model.TotalQuestions = questions.Count;
+            return View(model);
+        }
 
-        return View("Create", quiz);
+        // Les/oppdater score trygg i TempData
+        var key = $"score_{model.QuizId}";
+        int currentScore = 0;
+        if (TempData.TryGetValue(key, out var stored) && stored is int cs)
+        {
+            currentScore = cs;
+        }
+
+        // Evaluer svaret
+        var chosenOption = currentQuestion.Options?.FirstOrDefault(o => o.OptionId == model.SelectedOptionId.Value);
+        if (chosenOption != null && chosenOption.IsCorrect)
+        {
+            currentScore += 1;
+        }
+
+        TempData[key] = currentScore; // lagre score
+
+        // Neste spørsmål eller resultat
+        var nextQuestionNumber = model.QuestionNumber + 1;
+        var total = questions.Count;
+
+        if (nextQuestionNumber > total)
+        {
+            // Avslutt quiz: hent siste score og rydd TempData
+            int finalScore = 0;
+            if (TempData.TryGetValue(key, out var finalVal) && finalVal is int fs)
+            {
+                finalScore = fs;
+            }
+            TempData.Remove(key);
+
+            // Hent quiz for å få metadata (f.eks total antall spørsmål)
+            var quiz = await _quizRepository.GetQuizById(model.QuizId);
+            int totalQuestions = quiz?.Questions?.Count ?? total;
+
+            var resultVm = new ResultViewModel
+            {
+                QuizId = model.QuizId,
+                Score = finalScore,
+                TotalQuestions = totalQuestions,
+                Percentage = totalQuestions > 0 ? (double)finalScore / totalQuestions * 100.0 : 0.0
+            };
+
+            // Returner resultat view med viewmodel
+            return View("Result", resultVm);
+        }
+
+        return RedirectToAction(nameof(Take), new { id = model.QuizId, questionNumber = nextQuestionNumber });
     }
 
+    // ========================
+    // RESULT: viser resultatet
+    // ========================
+    [HttpGet]
+    public IActionResult Result(int id, int score)
+    {
+        // Hvis noen ruter kaller denne direkte med id/score, bygg en enkel viewmodel
+        var vm = new ResultViewModel
+        {
+            QuizId = id,
+            Score = score,
+            TotalQuestions = 0,
+            Percentage = 0
+        };
+        return View(vm);
+    }
+
+    // Du kan la AddQuestion ligge kommentert eller fjerne den — behold slik du foretrekker.
 }

@@ -1,11 +1,20 @@
-@model int
+@model Que.ViewModels.ResultViewModel
 
 @{
-    ViewData["Title"] = "Quiz Result";
+    ViewData["Title"] = "Quiz result";
 }
 
-<h2>Quiz Result</h2>
+<div class="text-center mt-5">
+    <h2>Result</h2>
+    <p class="lead">@Model.Message</p>
 
-<p>Your score: <strong>@Model</strong></p>
+    <div class="mb-3">
+        <div class="progress" style="height: 24px;">
+            <div class="progress-bar" role="progressbar" style="width:@Model.Percentage%;" aria-valuenow="@Model.Percentage" aria-valuemin="0" aria-valuemax="100">
+                @Model.Percentage.ToString("F0")%
+            </div>
+        </div>
+    </div>
 
-<a href="@Url.Action("Index", "Quiz")">Take another quiz</a>
+    <a asp-controller="Quiz" asp-action="Table" class="btn btn-primary">Back to quizzes</a>
+</div>
