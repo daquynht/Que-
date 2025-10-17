@@ -24,7 +24,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
     // --- Quiz Seeding ---
     modelBuilder.Entity<Quiz>().HasData(
-        new Quiz { QuizId = 1, Name = "General Knowledge Basics", Description = "Test your basic knowledge.", ImageUrl = "/images/default_quiz.jpg" }
+        new Quiz { QuizId = 1, Name = "General Knowledge Basics", Description = "Test your basic knowledge."}
     );
     
     // --- Question Seeding ---
