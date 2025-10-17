@@ -129,87 +129,90 @@ public class QuizRepository : IQuizRepository
             .ThenInclude(q => q.Options)
             .ToListAsync();
     }
-    // I QuizRepository.cs
-public async Task<Quiz?> GetQuizWithDetailsAsync(int id)
-{
-    // Bruk Eager Loading for å få med alt
-    return await _db.Quizes
-        .Include(q => q.Questions)
-            .ThenInclude(q => q.Options)
-        .FirstOrDefaultAsync(q => q.QuizId == id);
-}
 
-public async Task<bool> UpdateQuizFullAsync(Quiz updatedQuiz)
-{
-    // 1. Hent den eksisterende quizen med alle relasjoner (Tracked)
-    var existingQuiz = await GetQuizWithDetailsAsync(updatedQuiz.QuizId);
-
-    if (existingQuiz == null) return false;
-
-    // 2. Oppdater Quiz Metadata
-    _db.Entry(existingQuiz).CurrentValues.SetValues(updatedQuiz);
-
-    // 3. Synkroniser Questions (EF Core Power Feature)
-    var existingQuestions = existingQuiz.Questions.ToList() ?? new List<Question>();
-    
-    // Fjern spørsmål som ikke lenger er i 'updatedQuiz'
-    foreach (var existingQ in existingQuestions)
+    public async Task<Quiz?> GetQuizWithDetailsAsync(int id)
     {
-        if (!(updatedQuiz.Questions ?? new List<Question>()).Any(q => q.QuestionId == existingQ.QuestionId && existingQ.QuestionId != 0))
-        {
-            _db.Questions.Remove(existingQ);
-        }
-    }
-    
-    // Oppdater og legg til nye spørsmål
-    foreach (var updatedQ in updatedQuiz.Questions ?? new List<Question>())
-    {
-        var existingQ = existingQuestions.FirstOrDefault(q => q.QuestionId == updatedQ.QuestionId && updatedQ.QuestionId != 0);
-
-        if (existingQ != null)
-        {
-            // Oppdatering av eksisterende spørsmål
-            _db.Entry(existingQ).CurrentValues.SetValues(updatedQ);
-            
-            // Synkroniser Options for dette spørsmålet
-            var existingOptions = existingQ.Options.ToList() ?? new List<Option>();
-
-            // Fjern alternativer som er slettet
-            foreach (var existingO in existingOptions)
-            {
-                 if (!updatedQ.Options.Any(o => o.OptionId == existingO.OptionId && existingO.OptionId != 0))
-                 {
-                     _db.Options.Remove(existingO);
-                 }
-            }
-
-            // Oppdater og legg til nye alternativer
-            foreach (var updatedO in updatedQ.Options ?? new List<Option>())
-            {
-                var existingO = existingOptions.FirstOrDefault(o => o.OptionId == updatedO.OptionId && updatedO.OptionId != 0);
-
-                if (existingO != null)
-                {
-                    // Oppdatering av eksisterende alternativ
-                    _db.Entry(existingO).CurrentValues.SetValues(updatedO);
-                }
-                else
-                {
-                    // Legg til nytt 
-                    if (existingQ.Options == null) existingQ.Options = new List<Option>();
-                    existingQ.Options.Add(updatedO);
-                }
-            }
-        }
-        else
-        {
-            // Legg til nytt spørsmål (QuestionId = 0)
-            if (existingQuiz.Questions == null) existingQuiz.Questions = new List<Question>();
-            existingQuiz.Questions.Add(updatedQ);
-        }
+        // Bruk Eager Loading for å få med alt
+        return await _db.Quizes
+            .Include(q => q.Questions)
+                .ThenInclude(q => q.Options)
+            .FirstOrDefaultAsync(q => q.QuizId == id);
     }
 
-    // 4. Lagre alt i én transaksjon
-    return await _db.SaveChangesAsync() > 0;
-}
+    public async Task<bool> UpdateQuizFullAsync(Quiz updatedQuiz)
+    {
+        // Hent den eksisterende quizen med alle relasjoner (Tracked)
+        var existingQuiz = await GetQuizWithDetailsAsync(updatedQuiz.QuizId);
+
+        if (existingQuiz == null) return false;
+
+        // Oppdater Quiz Metadata
+        _db.Entry(existingQuiz).CurrentValues.SetValues(updatedQuiz);
+
+        // Synkroniser Questions (EF Core Power Feature)
+        var existingQuestions = existingQuiz.Questions.ToList() ?? new List<Question>();
+        
+        // Fjern spørsmål som ikke lenger er i 'updatedQuiz'
+        foreach (var existingQ in existingQuestions)
+        {
+            if (!(updatedQuiz.Questions ?? new List<Question>()).Any(q => q.QuestionId == existingQ.QuestionId && existingQ.QuestionId != 0))
+            {
+                _db.Questions.Remove(existingQ);
+            }
+        }
+        
+        // Oppdater og legg til nye spørsmål
+        foreach (var updatedQ in updatedQuiz.Questions ?? new List<Question>())
+        {
+            var existingQ = existingQuestions.FirstOrDefault(q => q.QuestionId == updatedQ.QuestionId && updatedQ.QuestionId != 0);
+
+            if (existingQ != null)
+            {
+                // Oppdatering av eksisterende spørsmål
+                _db.Entry(existingQ).CurrentValues.SetValues(updatedQ);
+                
+                // Synkroniser Options for dette spørsmålet
+                var existingOptions = existingQ.Options.ToList() ?? new List<Option>();
+
+                // Fjern alternativer som er slettet
+                foreach (var existingO in existingOptions)
+                {
+                    if (updatedQ?.Options != null && !updatedQ.Options.Any(o => o.OptionId == existingO.OptionId && existingO.OptionId != 0))
+                    {
+                        _db.Options.Remove(existingO);
+                    }
+                }
+
+                // Oppdater og legg til nye alternativer
+                if (updatedQ == null)
+                {
+                    return false;
+                }
+
+                foreach (var updatedO in updatedQ.Options ?? new List<Option>())
+                {
+                    var existingO = existingOptions.FirstOrDefault(o => o.OptionId == updatedO.OptionId && updatedO.OptionId != 0);
+
+                    if (existingO != null)
+                    {
+                        _db.Entry(existingO).CurrentValues.SetValues(updatedO);
+                    }
+                    else
+                    {
+                        existingQ.Options ??= new List<Option>();
+                        existingQ.Options.Add(updatedO);
+                    }
+                }
+            }
+            else
+            {
+                // Legg til nytt spørsmål (QuestionId = 0)
+                if (existingQuiz.Questions == null) existingQuiz.Questions = new List<Question>();
+                existingQuiz.Questions.Add(updatedQ);
+            }
+        }
+
+        // Lagre alt i én transaksjon
+        return await _db.SaveChangesAsync() > 0;
+    }
 }
