@@ -43,7 +43,7 @@ main {
 /* Setter bakgrunnen for navbar ved hjelp av den custom-klassen i _Layout.cshtml */
 .custom-navbar {
     background-color: #4E56C0 !important; /* Mørkeblå */
-    border-bottom: 3px solid #D78FEE; 
+    border-bottom: 3px solid #7A5AF8; 
 }
 
 /* Stil for lenker i navbar */
@@ -75,7 +75,7 @@ main {
 
 /* Setter bakgrunnen for footeren */
 .custom-footer {
-    background-color: #9B5DE0; /* Dyp lilla */
+    background-color: #7A5AF8; /* Dyp lilla */
     color: white; 
     text-align: center;
     padding: 15px 10px; 
@@ -133,7 +133,7 @@ main {
 
 /* KORTET MED QUIZ */
 .card {
-    border: 3px solid #9B5DE0; /* Tykk, lilla ramme */
+    border: 3px solid #7A5AF8; /* Tykk, lilla ramme */
     border-radius: 15px; /* Avrundede hjørner */
     transition: transform 0.2s;
     box-shadow: 0 6px 10px rgba(78, 86, 192, 0.15); /* Subtil blå skygge */
@@ -152,8 +152,9 @@ main {
 }
 
 /* TABLE SIDE*/
+
 .table {
-    border: 2px solid #9B5DE0;
+    border: 2px solid #7A5AF8;
     border-radius: 10px;
     overflow: hidden;
 }
@@ -161,9 +162,18 @@ main {
 .table th {
     background-color: #4E56C0;
     color: white;
-    border-color: #9B5DE0;
+    border-color: #7A5AF8;
 }
 
 .table td {
     border-color: #E0C4F6;
+}
+
+
+.gradient-text {
+  background: linear-gradient(90deg, #7A5AF8, #9B5DE0);
+  -webkit-background-clip: text;   /* For Safari/Chrome */
+  -webkit-text-fill-color: transparent;
+  background-clip: text;           /* For Firefox (partial support) */
+  color: transparent;
 }
