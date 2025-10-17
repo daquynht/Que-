@@ -11,8 +11,8 @@ using Que.DAL;
 namespace Que.Migrations
 {
     [DbContext(typeof(QuizDbContext))]
-    [Migration("20251016151606_OptionsMig")]
-    partial class OptionsMig
+    [Migration("20251017153239_QueNy3")]
+    partial class QueNy3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,7 +44,65 @@ namespace Que.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("Option");
+                    b.ToTable("Options");
+
+                    b.HasData(
+                        new
+                        {
+                            OptionId = 1,
+                            IsCorrect = false,
+                            QuestionId = 1,
+                            Text = "Bergen"
+                        },
+                        new
+                        {
+                            OptionId = 2,
+                            IsCorrect = true,
+                            QuestionId = 1,
+                            Text = "Oslo"
+                        },
+                        new
+                        {
+                            OptionId = 3,
+                            IsCorrect = false,
+                            QuestionId = 1,
+                            Text = "Trondheim"
+                        },
+                        new
+                        {
+                            OptionId = 4,
+                            IsCorrect = false,
+                            QuestionId = 1,
+                            Text = "Stavanger"
+                        },
+                        new
+                        {
+                            OptionId = 5,
+                            IsCorrect = false,
+                            QuestionId = 2,
+                            Text = "Saturn"
+                        },
+                        new
+                        {
+                            OptionId = 6,
+                            IsCorrect = true,
+                            QuestionId = 2,
+                            Text = "Jupiter"
+                        },
+                        new
+                        {
+                            OptionId = 7,
+                            IsCorrect = false,
+                            QuestionId = 2,
+                            Text = "Mars"
+                        },
+                        new
+                        {
+                            OptionId = 8,
+                            IsCorrect = false,
+                            QuestionId = 2,
+                            Text = "Jorden"
+                        });
                 });
 
             modelBuilder.Entity("Que.Models.Question", b =>
@@ -53,7 +111,7 @@ namespace Que.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CorrectOptionIndex")
+                    b.Property<bool>("AllowMultipleAnswers")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("QuizId")
@@ -68,6 +126,22 @@ namespace Que.Migrations
                     b.HasIndex("QuizId");
 
                     b.ToTable("Questions");
+
+                    b.HasData(
+                        new
+                        {
+                            QuestionId = 1,
+                            AllowMultipleAnswers = false,
+                            QuizId = 1,
+                            Text = "What is the capital of Norway?"
+                        },
+                        new
+                        {
+                            QuestionId = 2,
+                            AllowMultipleAnswers = false,
+                            QuizId = 1,
+                            Text = "What is the largest planet in our solar system?"
+                        });
                 });
 
             modelBuilder.Entity("Que.Models.Quiz", b =>
@@ -87,10 +161,6 @@ namespace Que.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -106,6 +176,17 @@ namespace Que.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Quizes");
+
+                    b.HasData(
+                        new
+                        {
+                            QuizId = 1,
+                            Category = "General",
+                            Description = "Test your basic knowledge.",
+                            Difficulty = "Medium",
+                            Name = "General Knowledge Basics",
+                            TimeLimit = 10
+                        });
                 });
 
             modelBuilder.Entity("Que.Models.User", b =>

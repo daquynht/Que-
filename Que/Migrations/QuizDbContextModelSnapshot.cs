@@ -108,6 +108,9 @@ namespace Que.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("AllowMultipleAnswers")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("QuizId")
                         .HasColumnType("INTEGER");
 
@@ -125,12 +128,14 @@ namespace Que.Migrations
                         new
                         {
                             QuestionId = 1,
+                            AllowMultipleAnswers = false,
                             QuizId = 1,
                             Text = "What is the capital of Norway?"
                         },
                         new
                         {
                             QuestionId = 2,
+                            AllowMultipleAnswers = false,
                             QuizId = 1,
                             Text = "What is the largest planet in our solar system?"
                         });

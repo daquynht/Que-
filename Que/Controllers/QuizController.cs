@@ -87,32 +87,54 @@ public class QuizController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        return View();
+        var quiz = new Quiz
+        {
+            Questions = new List<Question>
+            {
+                new Question
+                {
+                    Options = new List<Option> { new Option(), new Option(), new Option(), new Option() }
+                },
+                new Question
+                {
+                    Options = new List<Option> { new Option(), new Option(), new Option(), new Option() }
+                }
+            }
+        };
+
+        // Viktig: sørg for at QuestionId = 0 og OptionId = 0
+        foreach (var question in quiz.Questions)
+        {
+            question.QuestionId = 0;
+            foreach (var option in question.Options)
+            {
+                option.OptionId = 0;
+            }
+        }
+
+        return View(quiz);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Quiz quiz, List<Question> questions)
+    public async Task<IActionResult> Create(Quiz quiz)
     {
         if (!ModelState.IsValid) return View(quiz);
 
-        // 1. Lagre quiz først slik at den får QuizId
-        await _quizRepository.Create(quiz);
-
-        // 2. Sett QuizId på hvert spørsmål og legg til i DB
-        foreach (var question in questions)
+        // Nullstill ID-er for sikkerhet
+        foreach (var question in quiz.Questions)
         {
-            question.QuizId = quiz.QuizId;
-            await _quizRepository.AddQuestion(question);
+            question.QuestionId = 0;
+            question.QuizId = 0;
+            foreach (var option in question.Options)
+            {
+                option.OptionId = 0;
+                option.QuestionId = 0;
+            }
         }
 
-        return RedirectToAction(nameof(Table));
-    }
+        await _quizRepository.Create(quiz); // Her lagres Quiz med spørsmål og alternativer
 
-    [HttpGet]
-    public IActionResult CreateQuestions(int quizId)
-    {
-        ViewBag.QuizId = quizId;
-        return View();
+        return RedirectToAction(nameof(Table));
     }
 
     [HttpGet]
@@ -215,6 +237,27 @@ public class QuizController : Controller
         // Hvis ingen alternativ er valgt
         ModelState.AddModelError(string.Empty, "Vennligst velg et svar før du fortsetter.");
         return View(model); 
+    }
+
+    [HttpPost]
+    public IActionResult AddQuestion(Quiz quiz, List<Question> questions)
+    {
+        // Først beholder eksisterende spørsmål fra skjemaet
+        if (questions != null)
+        {
+            quiz.Questions = questions;
+        }
+
+        // Legg til nytt spørsmål med 4 tomme alternativer
+        quiz.Questions.Add(new Question
+        {
+            Options = new List<Option>
+            {
+                new Option(), new Option(), new Option(), new Option()
+            }
+        });
+
+        return View("Create", quiz);
     }
 
 }
