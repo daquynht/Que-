@@ -10,7 +10,7 @@ namespace Que.ViewModels{
         public string? SelectedDifficulty { get; set; }
         public string? SelectedQuestionCount { get; set; }
 
-        public List<string> Categories { get; set; } = new();
+        public List<string> Categories { get; set; } = new() { "Trivia", "History", "Geography", "Math", "Science", "General" };
         public List<string> Difficulties { get; set; } = new() { "Easy", "Medium", "Hard" };
 
         public List<QuestionCountRange> QuestionCounts { get; set; } = new()
