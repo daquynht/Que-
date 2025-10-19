@@ -13,9 +13,9 @@ namespace Que.Models
         public string Category { get; set; } = "General";
         public string Difficulty { get; set; } = "Medium";
 
+        [Range(1, 60, ErrorMessage = "Time limit must be between 1 and 60 minutes!")]
         public int TimeLimit { get; set; } = 10;
 
-        // Legg til denne for at Include(q => q.Questions) fungerer
         public virtual List<Question> Questions { get; set; } = new List<Question>();
     }
 }
