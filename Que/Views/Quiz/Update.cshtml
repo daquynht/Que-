@@ -61,14 +61,13 @@
     @for (int i = 0; i < Model.Questions.Count; i++)
     {
         <div class="question-block border p-2 m-3" data-index="@i">
-        <button type="button" class="btn btn-danger btn-sm remove-question-btn float-end">Remove</button>
             <input type="hidden" asp-for="Questions[@i].QuestionId" />
 
             <div class="form-group">
                 <label asp-for="Questions[@i].Text">Question Text</label>
                 <input asp-for="Questions[@i].Text" class="form-control" />
                 <span asp-validation-for="Questions[@i].Text" class="text-danger"></span>
-            </div>
+            </div> 
 
             <div class="form-check mb-2">
                 <input asp-for="Questions[@i].AllowMultipleAnswers" class="form-check-input" />
@@ -90,8 +89,14 @@
                     </div>
                 </div>
             }
+            <button type="button" 
+                    class="remove-btn remove-question-btn" 
+                    title="Fjern spørsmål">
+                <i class="fas fa-trash"></i>
+            </button>
         </div>
     }
+
     </div> @* Lukker questions-container div *@
 
     <div style="clear: both;"></div>
@@ -133,7 +138,6 @@
             const container = document.getElementById("questions-container");
             const html = `
                 <div class="question-block border p-3 mb-3" data-index="${questionIndex}"> 
-                    <button type="button" class="btn btn-danger btn-sm remove-question-btn float-end">Remove</button> @* KORRIGERT: Knappeplassering og syntaks *@
 
                     <input type="hidden" name="Questions[${questionIndex}].QuestionId" value="0" />
 
@@ -152,6 +156,10 @@
                     ${getOptionHtml(questionIndex, 1)}
                     ${getOptionHtml(questionIndex, 2)}
                     ${getOptionHtml(questionIndex, 3)}
+
+                    <button type="button" class="remove-btn remove-question-btn" title="Fjern spørsmål">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div> 
             `;
             container.insertAdjacentHTML("beforeend", html);

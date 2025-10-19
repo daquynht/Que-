@@ -25,3 +25,31 @@
 .quiz-option:hover {
     background-color: #d4edda;
 }
+
+.remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background-color: #dc3545;
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px;
+  margin-top: 16px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.remove-btn:hover {
+  background-color: #b02a37;
+  transform: scale(1.1);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+}
+
+.remove-btn i {
+  pointer-events: none; /* sørger for at ikonet ikke stopper klikket */
+}
+
