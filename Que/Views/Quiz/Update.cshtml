@@ -56,7 +56,6 @@
     </div>
 
     <h4 class="d-inline-block">Questions</h4>
-    <button type="button" id="add-question-btn" class="btn btn-secondary btn-sm mb-3">Add Question</button>
 
     <div id="questions-container"> @* ENDRET: ID er nå "questions-container" *@
     @for (int i = 0; i < Model.Questions.Count; i++)
@@ -95,8 +94,17 @@
     }
     </div> @* Lukker questions-container div *@
 
+    <div style="clear: both;"></div>
+
+    <div class="d-flex gap-2 mt-4">
+    <button type="button" id="add-question-btn" class="btn btn-success" title="Add Question">Add Question</button>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
     <button type="submit" class="btn btn-primary">Save Changes</button>
     <a asp-action="Table" class="btn btn-secondary">Cancel</a>
+    </div>
+
 </form>
 
 @section Scripts {
