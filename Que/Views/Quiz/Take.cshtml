@@ -20,14 +20,29 @@
         <div class="list-group">
             @foreach (var option in Model.Options)
             {
-                <label class="list-group-item d-flex align-items-center mb-2 custom-option">
-                    <input type="radio" 
-                           name="@Html.NameFor(m => m.SelectedOptionId)" 
-                           value="@option.OptionId" 
-                           required 
-                           class="form-check-input me-3" />
-                    <span class="option-text">@option.Text</span>
-                </label>
+                if (Model.AllowMultipleAnswers)
+                {
+                    <!-- Flere svar mulig -->
+                    <label class="list-group-item d-flex align-items-center mb-2 custom-option">
+                        <input type="checkbox"
+                            name="SelectedOptionIds"
+                            value="@option.OptionId"
+                            class="form-check-input me-3" />
+                        <span class="option-text">@option.Text</span>
+                    </label>
+                }
+                else
+                {
+                    <!-- Kun ett svar -->
+                    <label class="list-group-item d-flex align-items-center mb-2 custom-option">
+                        <input type="radio"
+                            name="SelectedOptionIds"
+                            value="@option.OptionId"
+                            required
+                            class="form-check-input me-3" />
+                        <span class="option-text">@option.Text</span>
+                    </label>
+                }
             }
         </div>
         

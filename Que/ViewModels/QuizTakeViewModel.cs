@@ -8,16 +8,20 @@ namespace Que.ViewModels
         public int QuizId { get; set; }
         public string QuizName { get; set; } = string.Empty;
 
-        // (Valgfritt) bruk hvis du vil ha hele spørsmål-lista tilgjengelig
         public List<Question> Questions { get; set; } = new();
 
-        // Nå med feltene som brukes i Controller og View:
         public int QuestionNumber { get; set; }
-        public int TotalQuestions { get; set; }           // <-- NY
-        public int QuestionId { get; set; }               // <-- NY
+        public int TotalQuestions { get; set; }
+        public int QuestionId { get; set; }
 
         public string QuestionText { get; set; } = string.Empty;
-        public int? SelectedOptionId { get; set; }
+
+        // Endring her ↓
+        public List<int> SelectedOptionIds { get; set; } = new();
+
         public List<Option> Options { get; set; } = new();
+
+        // Nytt felt for å vite om spørsmålet tillater flere svar
+        public bool AllowMultipleAnswers { get; set; }
     }
 }
