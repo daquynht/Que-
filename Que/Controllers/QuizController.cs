@@ -196,13 +196,13 @@ public class QuizController : Controller
             TotalQuestions = questions.Count,
             QuestionId = question.QuestionId,
             QuestionText = question.Text,
+            AllowMultipleAnswers = question.AllowMultipleAnswers, // 👈 legg til dette
             Options = question.Options?.Select(o => new Option
             {
                 OptionId = o.OptionId,
                 Text = o.Text,
                 IsCorrect = o.IsCorrect
-            }).ToList() ?? new List<Option>(),
-            SelectedOptionId = null
+            }).ToList() ?? new List<Option>()
         };
 
         return View(viewModel);
@@ -231,9 +231,10 @@ public class QuizController : Controller
         }
 
         // Hvis ingen svar valgt -> vis samme view med feilmelding (repoppuler options)
-        if (!model.SelectedOptionId.HasValue)
+        // Hvis ingen svar valgt -> vis samme view med feilmelding
+        if (model.SelectedOptionIds == null || !model.SelectedOptionIds.Any())
         {
-            ModelState.AddModelError(string.Empty, "Vennligst velg et svar før du fortsetter.");
+            ModelState.AddModelError(string.Empty, "Vennligst velg minst ett svar før du fortsetter.");
             model.Options = currentQuestion.Options?.Select(o => new Option
             {
                 OptionId = o.OptionId,
@@ -241,10 +242,11 @@ public class QuizController : Controller
                 IsCorrect = o.IsCorrect
             }).ToList() ?? new List<Option>();
             model.TotalQuestions = questions.Count;
+            model.AllowMultipleAnswers = currentQuestion.AllowMultipleAnswers;
             return View(model);
         }
 
-        // Les/oppdater score trygg i TempData
+        // Les/oppdater score
         var key = $"score_{model.QuizId}";
         int currentScore = 0;
         if (TempData.TryGetValue(key, out var stored) && stored is int cs)
@@ -252,11 +254,24 @@ public class QuizController : Controller
             currentScore = cs;
         }
 
-        // Evaluer svaret
-        var chosenOption = currentQuestion.Options?.FirstOrDefault(o => o.OptionId == model.SelectedOptionId.Value);
-        if (chosenOption != null && chosenOption.IsCorrect)
+        // Evaluer riktig/flere svar
+        if (currentQuestion.AllowMultipleAnswers)
         {
-            currentScore += 1;
+            var correctOptions = currentQuestion.Options.Where(o => o.IsCorrect).Select(o => o.OptionId).ToHashSet();
+            var chosen = model.SelectedOptionIds.ToHashSet();
+
+            if (chosen.SetEquals(correctOptions))
+            {
+                currentScore += 1; // full score hvis alle riktige (og ingen feil)
+            }
+        }
+        else
+        {
+            var chosenOption = currentQuestion.Options.FirstOrDefault(o => o.OptionId == model.SelectedOptionIds.First());
+            if (chosenOption != null && chosenOption.IsCorrect)
+            {
+                currentScore += 1;
+            }
         }
 
         TempData[key] = currentScore; // lagre score
@@ -294,9 +309,7 @@ public class QuizController : Controller
         return RedirectToAction(nameof(Take), new { id = model.QuizId, questionNumber = nextQuestionNumber });
     }
 
-    // ========================
     // RESULT: viser resultatet
-    // ========================
     [HttpGet]
     public IActionResult Result(int id, int score)
     {
