@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Que.Models;
 
 namespace Que.ViewModels{
+    // ViewModel used for the dashboard page, handling quiz lists, search, and filter options.
     public class DashboardViewModel
     {
         public List<Quiz> Quizes { get; set; } = new();
@@ -23,6 +24,7 @@ namespace Que.ViewModels{
         };
     }
 
+    // Helper class used to define question count filter ranges.
     public class QuestionCountRange
     {
         public string Label { get; set; } = string.Empty;

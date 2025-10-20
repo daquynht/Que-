@@ -5,6 +5,7 @@ using Que.Models;
 
 namespace Que.ViewModels
 {
+    // ViewModel representing a single quiz question, including its options and selected answers.
     public class QuestionsViewModel
     {
         public int QuestionId { get; set; }
@@ -15,6 +16,7 @@ namespace Que.ViewModels
         public List<int> SelectedOptions { get; set; }
         public QuestionsViewModel()
         {
+            // Initializes each question with four empty answer options by default
             Options = new List<OptionsViewModel>
             {
                 new OptionsViewModel(),

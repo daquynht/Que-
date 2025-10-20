@@ -4,6 +4,7 @@ using Que.Models;
 
 namespace Que.Models
 {
+    // Represents a complete quiz, including its questions, category, difficulty, and time limit.
     public class Quiz
     {
         [Key]
@@ -13,6 +14,7 @@ namespace Que.Models
         public string Category { get; set; } = "General";
         public string Difficulty { get; set; } = "Medium";
 
+        // Validation: ensures the time limit stays between 1 and 60 minutes
         [Range(1, 60, ErrorMessage = "Time limit must be between 1 and 60 minutes!")]
         public int TimeLimit { get; set; } = 10;
 

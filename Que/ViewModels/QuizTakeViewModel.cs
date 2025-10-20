@@ -3,6 +3,8 @@ using Que.Models;
 
 namespace Que.ViewModels
 {
+    // ViewModel used when a user takes a quiz.
+    // Holds quiz details, current question data, selected answers, and time limit.
     public class QuizTakeViewModel
     {
         public int QuizId { get; set; }
