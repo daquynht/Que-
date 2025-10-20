@@ -115,9 +115,11 @@ public class QuizController : Controller
     {
         var quiz = await _quizRepository.GetQuizWithDetailsAsync(id);
         if (quiz == null)
-            return NotFound();
+        {
+            _logger.LogError("[QuizController] Quiz not found when updating the QuizId {QuizId:0000}", id);
+            return BadRequest("Quiz not found for the QuizId");
+        }
 
-        // Map model → view model (including nested relationships)
         var viewModel = new QuizesViewModel
         {
             Quiz = quiz,
@@ -146,43 +148,81 @@ public class QuizController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(QuizesViewModel model)
     {
+        _logger.LogInformation("[QuizController] Update called for QuizId {QuizId:0000}", model.Quiz?.QuizId);
+
         if (!ModelState.IsValid)
         {
+            _logger.LogWarning("[QuizController] ModelState invalid when updating QuizId {QuizId:0000}. Errors: {Errors}",
+                model.Quiz?.QuizId,
+                string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage))
+            );
             return View(model);
         }
 
-        // Build updated quiz entity
-        var updatedQuiz = new Quiz
+        try
         {
-            QuizId = model.Quiz.QuizId,
-            Name = model.Quiz.Name,
-            Description = model.Quiz.Description,
-            Category = model.Quiz.Category,
-            Difficulty = model.Quiz.Difficulty,
-            TimeLimit = model.Quiz.TimeLimit,
-            Questions = model.Questions.Select(qvm => new Question
+            // --- Logging av inndata ---
+            _logger.LogInformation("[QuizController] Starting update for QuizId {QuizId:0000}. Name='{Name}', Questions={QuestionCount}",
+                model.Quiz.QuizId,
+                model.Quiz.Name,
+                model.Questions?.Count ?? 0
+            );
+
+            var updatedQuiz = new Quiz
             {
-                QuestionId = qvm.QuestionId,
-                Text = qvm.Text,
-                AllowMultipleAnswers = qvm.AllowMultipleAnswers,
-                Options = qvm.Options.Select(ovm => new Option
+                QuizId = model.Quiz.QuizId,
+                Name = model.Quiz.Name,
+                Description = model.Quiz.Description,
+                Category = model.Quiz.Category,
+                Difficulty = model.Quiz.Difficulty,
+                TimeLimit = model.Quiz.TimeLimit,
+                Questions = model.Questions.Select(qvm => new Question
                 {
-                    OptionId = ovm.OptionId,
-                    Text = ovm.Text,
-                    IsCorrect = ovm.IsCorrect
+                    QuestionId = qvm.QuestionId,
+                    Text = qvm.Text,
+                    AllowMultipleAnswers = qvm.AllowMultipleAnswers,
+                    Options = qvm.Options.Select(ovm => new Option
+                    {
+                        OptionId = ovm.OptionId,
+                        Text = ovm.Text,
+                        IsCorrect = ovm.IsCorrect
+                    }).ToList()
                 }).ToList()
-            }).ToList()
-        };
+            };
 
-        // Repository handles database update
-        var success = await _quizRepository.UpdateQuizFullAsync(updatedQuiz);
+            // --- Logging av detaljerte spørsmål og svaralternativer ---
+            foreach (var q in updatedQuiz.Questions)
+            {
+                _logger.LogDebug("[QuizController] QuestionId={QuestionId}, Text='{Text}', AllowMultipleAnswers={AllowMultiple}",
+                    q.QuestionId, q.Text, q.AllowMultipleAnswers);
 
-        if (!success)
+                foreach (var o in q.Options)
+                {
+                    _logger.LogDebug("    OptionId={OptionId}, Text='{OptionText}', IsCorrect={IsCorrect}",
+                        o.OptionId, o.Text, o.IsCorrect);
+                }
+            }
+
+            var success = await _quizRepository.UpdateQuizFullAsync(updatedQuiz);
+
+            if (!success)
+            {
+                _logger.LogError("[QuizController] UpdateQuizFullAsync failed for QuizId {QuizId:0000}", updatedQuiz.QuizId);
+                ModelState.AddModelError(string.Empty, "En feil oppstod under lagring av endringene.");
+                return View(model);
+            }
+
+            _logger.LogInformation("[QuizController] Successfully updated QuizId {QuizId:0000}", updatedQuiz.QuizId);
+            return RedirectToAction("Table");
+        }
+        catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, "An error occurred while saving changes.");
+            _logger.LogError(ex, "[QuizController] Exception while updating QuizId {QuizId:0000}: {Message}",
+                model.Quiz?.QuizId, ex.Message);
+
+            ModelState.AddModelError(string.Empty, "En uventet feil oppstod. Prøv igjen senere.");
             return View(model);
         }
-        return RedirectToAction("Table");
     }
 
 
