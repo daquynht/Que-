@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Que.Models;
 using Que.DAL;
+using Serilog;
+using Serilog.Events;
+using Microsoft.EntityFrameworkCore.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +15,18 @@ builder.Services.AddDbContext<QuizDbContext>(options => {
 });
 
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
+
+var loggerConfiguration = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.File($"Logs/app_{DateTime.Now:yyyyMMdd_HHmmss}.log");
+
+loggerConfiguration.Filter.ByExcluding(e => e.Properties.TryGetValue("SourceContext", out var value) && 
+                                        e.Level == LogEventLevel.Information && 
+                                        e.MessageTemplate.Text.Contains("Excluded DbCommand"));
+
+var logger = loggerConfiguration.CreateLogger();
+builder.Logging.AddSerilog(logger);
+
 
 var app = builder.Build();
 

@@ -12,10 +12,12 @@ namespace Que.Controllers;
 public class QuizController : Controller
 {
     private readonly IQuizRepository _quizRepository;
+    private readonly ILogger<QuizController> _logger;
 
-    public QuizController(IQuizRepository quizRepository)
+    public QuizController(IQuizRepository quizRepository, ILogger<QuizController> logger)
     {
         _quizRepository = quizRepository;
+        _logger = logger;
     }
 
     public async Task<IActionResult> Grid()
@@ -27,6 +29,10 @@ public class QuizController : Controller
 
     public async Task<IActionResult> Table()
     {
+        _logger.LogInformation("This is an information message.");
+        _logger.LogWarning("This is a warning message.");
+        _logger.LogError("This is an error message.");
+
         var quizes = (await _quizRepository.GetAll()).ToList();
         var viewModel = new QuizesViewModel(quizes, "Table");
         return View(viewModel);
