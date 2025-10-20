@@ -196,7 +196,8 @@ public class QuizController : Controller
             TotalQuestions = questions.Count,
             QuestionId = question.QuestionId,
             QuestionText = question.Text,
-            AllowMultipleAnswers = question.AllowMultipleAnswers, // 👈 legg til dette
+            AllowMultipleAnswers = question.AllowMultipleAnswers,
+            TimeLimit = quiz.TimeLimit, // <- Legg til
             Options = question.Options?.Select(o => new Option
             {
                 OptionId = o.OptionId,

@@ -16,12 +16,12 @@ namespace Que.ViewModels
 
         public string QuestionText { get; set; } = string.Empty;
 
-        // Endring her ↓
         public List<int> SelectedOptionIds { get; set; } = new();
-
         public List<Option> Options { get; set; } = new();
 
-        // Nytt felt for å vite om spørsmålet tillater flere svar
         public bool AllowMultipleAnswers { get; set; }
+
+        public int TimeLimitInSeconds => TimeLimit * 60;
+        public int TimeLimit { get; set; }
     }
 }
