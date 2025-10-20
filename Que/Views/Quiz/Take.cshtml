@@ -23,7 +23,7 @@
             {
                 if (Model.AllowMultipleAnswers)
                 {
-                    <!-- Flere svar mulig -->
+                    <!-- Multiple answers possible -->
                     <label class="list-group-item d-flex align-items-center mb-2 custom-option">
                         <input type="checkbox"
                             name="SelectedOptionIds"
@@ -34,7 +34,7 @@
                 }
                 else
                 {
-                    <!-- Kun ett svar -->
+                    <!-- Only one answer -->
                     <label class="list-group-item d-flex align-items-center mb-2 custom-option">
                         <input type="radio"
                             name="SelectedOptionIds"
@@ -55,7 +55,7 @@
 
 @section Scripts {
 <script>
-    // Sett starttid basert på TimeLimit i sekunder
+    // Put start time based on TimeLimit in seconds
     let timeLeft = @Model.TimeLimitInSeconds;
     const timerDisplay = document.getElementById("quiz-timer");
 
@@ -66,12 +66,12 @@
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
             alert("Time is up! Your quiz will be submitted automatically.");
-            document.querySelector("form").submit(); // Submit form automatisk
+            document.querySelector("form").submit(); // Submit form automatically
         }
         timeLeft--;
     }
 
-    updateTimer(); // Kjør umiddelbart for å vise starttid
-    const timerInterval = setInterval(updateTimer, 1000); // Oppdater hvert sekund
+    updateTimer(); // Run immediately
+    const timerInterval = setInterval(updateTimer, 1000); // Update every second
 </script>
 }

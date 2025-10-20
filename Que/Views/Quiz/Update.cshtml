@@ -57,7 +57,7 @@
 
     <h4 class="d-inline-block">Questions</h4>
 
-    <div id="questions-container"> @* ENDRET: ID er nå "questions-container" *@
+    <div id="questions-container"> @* Changed: ID is now"questions-container" *@
     @for (int i = 0; i < Model.Questions.Count; i++)
     {
         <div class="question-block border p-2 m-3" data-index="@i">
@@ -77,7 +77,7 @@
             <h5>Options</h5>
             @for (int j = 0; j < Model.Questions[i].Options.Count; j++)
             {
-                <div class="form-group option-block"> @* Lagt til "option-block" for konsistens *@
+            <div class="form-group option-block"> @* Added "option-block" for consistency *@
                     <input type="hidden" asp-for="Questions[@i].Options[@j].OptionId" />
 
                     <label>Option Text</label>
@@ -91,13 +91,13 @@
             }
             <button type="button" 
                     class="remove-btn remove-question-btn" 
-                    title="Fjern spørsmål">
+                    title="Remove question">
                 <i class="fas fa-trash"></i>
             </button>
         </div>
     }
 
-    </div> @* Lukker questions-container div *@
+    </div> @* Closes questions-container div *@
 
     <div style="clear: both;"></div>
 
@@ -114,9 +114,9 @@
 
 @section Scripts {
     <script>
-        let questionIndex = @Model.Questions.Count; // Holder styr på den neste ledige indeksen
+        let questionIndex = @Model.Questions.Count; // Keeps track of the next available index
 
-        // KORRIGERT: Hjelpefunksjon for å generere HTML for et nytt alternativ (med template literals)
+        // Corrected: Helper function to generate HTML for a new option
         function getOptionHtml(questionIdx, optionIdx) {
             return `
             <div class="form-group option-block">
@@ -130,10 +130,10 @@
                         <label class="form-check-label">Is Correct</label>
                     </div>
                 </div>
-            `; // Viktig: Bruk bakovervendt apostrof for å returnere strengen
+            `; // mportant: Use backticks to return the string
         }
 
-        // Add Question funksjon
+        // Add Question function
         document.getElementById("add-question-btn").addEventListener("click", function () {
             const container = document.getElementById("questions-container");
             const html = `
@@ -167,42 +167,42 @@
         });
 
         // ------------------------------------------------------------------
-        // --- NY FUNKSJONALITET: Fjerne spørsmål og reindeksere ---
+        // NEW FUNCTIONALITY: Remove questions and reindex
         // ------------------------------------------------------------------
 
-        // Legg til en event lytter på containeren for å fange klikk på "Remove"-knapper
+        // Add an event listener to the container to detect clicks on "Remove" buttons
         document.getElementById("questions-container").addEventListener("click", function (e) {
-            // Sjekk om klikket kom fra en knapp med klassen 'remove-question-btn'
+            // Check if the click came from a button with the class 'remove-question-btn'
             if (e.target.classList.contains("remove-question-btn")) {
-                // Finn nærmeste overordnede element som er spørsmålsblokken
+                // FFind the nearest parent element that represents the question block
                 const questionBlock = e.target.closest(".question-block");
                 if (questionBlock) {
-                    questionBlock.remove(); // Fjerner elementet fra DOM
-                    reindexQuestions(); // Reindekser de resterende spørsmålene
+                    questionBlock.remove(); // Removes the element from the DOM
+                    reindexQuestions(); // Reindex remaining questions
                 }
             }
         });
 
         /**
-         * Sikrer at Questions[i].PropertyName er fortløpende (0, 1, 2, ...)
-         * for at ASP.NET Model Binder skal binde til en List<Question>.
+         * Ensures that Questions[i].PropertyName is sequential (0, 1, 2, ...)
+         * so that the ASP.NET Model Binder can correctly bind to a List<Question>.
          */
         function reindexQuestions() {
             const questions = document.querySelectorAll("#questions-container > .question-block");
             
             questions.forEach((q, index) => {
-                // Oppdater data-index for fremtidig bruk
+                // Update data-index attribute
                 q.dataset.index = index;
 
-                // Oppdater alle name-attributter i spørsmålsblokken
+                // Update all name attributes within the question block
                 q.querySelectorAll('[name^="Questions["]').forEach(input => {
                      const nameAttr = input.getAttribute('name');
                      
-                     // Bytt ut den gamle indeksen i name-attributtet med den nye
+                     // change Questions[oldIndex] to Questions[newIndex]
                      input.name = nameAttr.replace(/Questions\[\d+\]/g, `Questions[${index}]`);
                 });
             });
-            // Oppdater questionIndex til å være lengden av den nye listen
+            // Update questionIndex to match the new number of questions
             questionIndex = questions.length;
         }
     </script>
