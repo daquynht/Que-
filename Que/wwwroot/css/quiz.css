@@ -1,20 +1,20 @@
-/* Container for hele quizseksjonen */
+/* Quiz container */
 .quiz-container {
     max-width: 600px;
-    margin: 50px auto;
+    margin: 50px auto; /* Centers it on the page */
     background-color: white;
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-/* Selve spørsmålet i quiz */
+/* Question text */
 .quiz-question {
     font-size: 1.2rem;
     margin-bottom: 20px;
 }
 
-/* Hver valgknapp (alternativ) */
+/* Answer options */
 .quiz-option {
     display: block;
     background-color: #e9ecef;
@@ -25,12 +25,12 @@
     transition: 0.2s;
 }
 
-/* Hover-effekt for valgknappene */
+/* Hover effect for options */
 .quiz-option:hover {
     background-color: #d4edda;
 }
 
-/* Stil for fjern-knapp */
+/* Red circular remove button */
 .remove-btn {
   display: inline-flex;
   align-items: center;
@@ -48,15 +48,15 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
-/* Hover-effekt for fjern-knapp */
+/* Hover effect for remove button */
 .remove-btn:hover {
   background-color: #b02a37;
   transform: scale(1.1);
   box-shadow: 0 3px 8px rgba(0,0,0,0.25);
 }
 
-/* Ikonet inne i fjern-knappen */
+/* Makes sure the icon inside remains clickable */
 .remove-btn i {
-  pointer-events: none; /* sørger for at ikonet ikke stopper klikket */
+  pointer-events: none; 
 }
 

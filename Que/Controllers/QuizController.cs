@@ -20,6 +20,10 @@ public class QuizController : Controller
         _logger = logger;
     }
 
+    // =========================
+    // GRID VIEW – shows quizzes as cards
+    // =========================
+
     public async Task<IActionResult> Grid()
     {
         var quizes = (await _quizRepository.GetAll()).ToList();
@@ -31,6 +35,10 @@ public class QuizController : Controller
         var viewModel = new QuizesViewModel(quizes, "Grid");
         return View(viewModel);
     }
+
+    // =========================
+    // TABLE VIEW – shows quizzes in table format
+    // =========================
 
     public async Task<IActionResult> Table()
     {
@@ -44,6 +52,7 @@ public class QuizController : Controller
         return View(viewModel);
     }
 
+    // Additional view – same pattern
     public async Task<IActionResult> SeeQuizes()
     {
         var quizes = (await _quizRepository.GetAll()).ToList();
@@ -56,12 +65,21 @@ public class QuizController : Controller
         return View(viewModel);
     }
 
+    // =========================
+    // CREATE (GET) – returns empty form for new quiz
+    // =========================
+
     [HttpGet]
     public IActionResult Create()
     {
         var model = new QuizesViewModel();
         return View(model);
     }
+
+
+    // =========================
+    // CREATE (POST) – builds a new Quiz object from the form data and saves it
+    // =========================
 
     [HttpPost]
     public async Task<IActionResult> Create(QuizesViewModel model)
@@ -88,6 +106,10 @@ public class QuizController : Controller
         return RedirectToAction("Table");
     }
 
+    // =========================
+    // UPDATE (GET) – fetches an existing quiz and loads it into a view model
+    // =========================
+
     [HttpGet]
     public async Task<IActionResult> Update(int id)
     {
@@ -95,6 +117,7 @@ public class QuizController : Controller
         if (quiz == null)
             return NotFound();
 
+        // Map model → view model (including nested relationships)
         var viewModel = new QuizesViewModel
         {
             Quiz = quiz,
@@ -115,6 +138,10 @@ public class QuizController : Controller
         return View(viewModel);
     }
 
+    // =========================
+    // UPDATE (POST) – saves edited quiz data
+    // =========================
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(QuizesViewModel model)
@@ -124,8 +151,9 @@ public class QuizController : Controller
             return View(model);
         }
 
-       var updatedQuiz = new Quiz
-       {
+        // Build updated quiz entity
+        var updatedQuiz = new Quiz
+        {
             QuizId = model.Quiz.QuizId,
             Name = model.Quiz.Name,
             Description = model.Quiz.Description,
@@ -144,8 +172,9 @@ public class QuizController : Controller
                     IsCorrect = ovm.IsCorrect
                 }).ToList()
             }).ToList()
-       };
+        };
 
+        // Repository handles database update
         var success = await _quizRepository.UpdateQuizFullAsync(updatedQuiz);
 
         if (!success)
@@ -155,6 +184,11 @@ public class QuizController : Controller
         }
         return RedirectToAction("Table");
     }
+
+
+    // =========================
+    // DELETE (GET) – confirmation page
+    // =========================
 
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
@@ -167,6 +201,10 @@ public class QuizController : Controller
         return View(quiz);
     }
 
+    // =========================
+    // DELETE (POST) – deletes the quiz from DB
+    // =========================
+
     [HttpPost]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
@@ -178,10 +216,11 @@ public class QuizController : Controller
     // TAKE (GET): viser ett spørsmål av gangen
     // URL: /Quiz/Take/{id}?questionNumber=1
     // ========================
+
     [HttpGet]
     public async Task<IActionResult> Take(int id, int questionNumber = 1)
     {
-        // Hent quiz + spørsmål fra repo
+        // Fetch quiz and its questions
         var quiz = await _quizRepository.GetQuizById(id);
         var questions = await _quizRepository.GetQuestionsByQuizId(id);
 
@@ -190,7 +229,7 @@ public class QuizController : Controller
             return NotFound("Quizen eller dens spørsmål ble ikke funnet.");
         }
 
-        // Hvis questionNumber utenfor range -> vis resultat
+        // If questionNumber is out of range, redirect to Result
         if (questionNumber < 1 || questionNumber > questions.Count)
         {
             var key = $"score_{id}";
@@ -203,6 +242,7 @@ public class QuizController : Controller
             return RedirectToAction(nameof(Result), new { id = id, score = score });
         }
 
+        // Build the view model for the current question
         var question = questions[questionNumber - 1];
 
         var viewModel = new QuizTakeViewModel
@@ -229,30 +269,30 @@ public class QuizController : Controller
     // ========================
     // TAKE (POST): tar imot svaret, evaluerer og går videre
     // ========================
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Take(QuizTakeViewModel model)
     {
-        // Hent spørsmål fra repo
+        // Get questions from repository
         var questions = await _quizRepository.GetQuestionsByQuizId(model.QuizId);
         if (questions == null || !questions.Any())
         {
             return NotFound();
         }
 
-        // Finn gjeldende spørsmål
+        // Find current question
         var currentQuestion = questions.FirstOrDefault(q => q.QuestionId == model.QuestionId);
         if (currentQuestion == null)
         {
-            ModelState.AddModelError(string.Empty, "Spørsmålet finnes ikke.");
+            ModelState.AddModelError(string.Empty, "Question not found");
             return View(model);
         }
 
-        // Hvis ingen svar valgt -> vis samme view med feilmelding (repoppuler options)
-        // Hvis ingen svar valgt -> vis samme view med feilmelding
+        // If no answer selected → re-display same view with error message
         if (model.SelectedOptionIds == null || !model.SelectedOptionIds.Any())
         {
-            ModelState.AddModelError(string.Empty, "Vennligst velg minst ett svar før du fortsetter.");
+            ModelState.AddModelError(string.Empty, "Please select at least one answer before continuing.");
             model.Options = currentQuestion.Options?.Select(o => new Option
             {
                 OptionId = o.OptionId,
@@ -264,7 +304,7 @@ public class QuizController : Controller
             return View(model);
         }
 
-        // Les/oppdater score
+        // Store and update score using TempData (temporary session storage)
         var key = $"score_{model.QuizId}";
         int currentScore = 0;
         if (TempData.TryGetValue(key, out var stored) && stored is int cs)
@@ -272,15 +312,16 @@ public class QuizController : Controller
             currentScore = cs;
         }
 
-        // Evaluer riktig/flere svar
+        // Check if answer is correct
         if (currentQuestion.AllowMultipleAnswers)
         {
+            // Compare sets of correct vs selected options
             var correctOptions = currentQuestion.Options.Where(o => o.IsCorrect).Select(o => o.OptionId).ToHashSet();
             var chosen = model.SelectedOptionIds.ToHashSet();
 
             if (chosen.SetEquals(correctOptions))
             {
-                currentScore += 1; // full score hvis alle riktige (og ingen feil)
+                currentScore += 1; // full score only if all correct
             }
         }
         else
@@ -292,15 +333,15 @@ public class QuizController : Controller
             }
         }
 
-        TempData[key] = currentScore; // lagre score
+        TempData[key] = currentScore; // save updated score
 
-        // Neste spørsmål eller resultat
+        // Move to next question or finish the quiz
         var nextQuestionNumber = model.QuestionNumber + 1;
         var total = questions.Count;
 
         if (nextQuestionNumber > total)
         {
-            // Avslutt quiz: hent siste score og rydd TempData
+            // Quiz finished - calculate final score
             int finalScore = 0;
             if (TempData.TryGetValue(key, out var finalVal) && finalVal is int fs)
             {
@@ -308,7 +349,7 @@ public class QuizController : Controller
             }
             TempData.Remove(key);
 
-            // Hent quiz for å få metadata (f.eks total antall spørsmål)
+            // Prepare result view model
             var quiz = await _quizRepository.GetQuizById(model.QuizId);
             int totalQuestions = quiz?.Questions?.Count ?? total;
 
@@ -320,18 +361,21 @@ public class QuizController : Controller
                 Percentage = totalQuestions > 0 ? (double)finalScore / totalQuestions * 100.0 : 0.0
             };
 
-            // Returner resultat view med viewmodel
+            // Redirect to next question
             return View("Result", resultVm);
         }
 
         return RedirectToAction(nameof(Take), new { id = model.QuizId, questionNumber = nextQuestionNumber });
     }
 
-    // RESULT: viser resultatet
+    // =========================
+    // RESULT VIEW – displays final score after quiz is finished
+    // =========================
+    
     [HttpGet]
     public IActionResult Result(int id, int score)
     {
-        // Hvis noen ruter kaller denne direkte med id/score, bygg en enkel viewmodel
+        // If no score provided, show zero results
         var vm = new ResultViewModel
         {
             QuizId = id,
@@ -341,6 +385,4 @@ public class QuizController : Controller
         };
         return View(vm);
     }
-
-    // Du kan la AddQuestion ligge kommentert eller fjerne den — behold slik du foretrekker.
 }

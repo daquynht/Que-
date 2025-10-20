@@ -1,52 +1,55 @@
-/* Generell stil for hele applikasjonen */
+/* General style for the entire application*/
 html, body {
     font-family: 'Poppins', sans-serif;
-    background-color: #ffffff; /* Lys pastell lilla/rosa bakgrunn */
+    background-color: #ffffff; /* Light background */
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: 100vh; /* Ensures the page always fills the viewport height */
  }
 
-/* Main tar opp alt av plass mellom header og footer */
+/* Makes <main> fill all space between header and footer */
 main {
     flex: 1 0 auto;
 }
 
-/* --- NAVIGASJONSBAR (custom-navbar) --- */
+/* --- NAVBAR (custom-navbar) --- */
 
-/* Setter bakgrunnen for navbar ved hjelp av den custom-klassen i _Layout.cshtml */
+/* Background and border styling for the custom navbar */
 .custom-navbar {
     background-color: #4E56C0 !important; /* Mørkeblå */
     border-bottom: 3px solid #7A5AF8; 
 }
 
-/* Stil for lenker i navbar */
+/* Link styling inside the navbar */
 .custom-navbar a {
     color: white !important;
     font-weight: 600;
 }
 
+/* --- TITLE STYLING --- */
 
-/* TITTEL */
+/* Main page title */
 .main-title {
     font-family: 'Poppins', sans-serif; 
     font-weight: 900; 
     font-size: 3.5rem; 
-    color: #4E56C0; /* Mørkeblå (Hovedfargen) */
-    text-shadow: 4px 4px 0px #D78FEE; /* Lys Lilla Skygge */
+    color: #4E56C0; /* Main blue color */
+    text-shadow: 4px 4px 0px #D78FEE; /* Soft purple shadow */
     letter-spacing: 2px;
     padding: 20px 0;
     margin-bottom: 0 !important; 
 }
 
+/* Subtitle directly below .main-title */
 .main-title + .lead {
     color: #9B5DE0; /* Setter underteksten til dyp lilla */
     font-size: 1.25rem;
     font-weight: 500;
 }
 
+/* --- GRADIENT TEXT EFFECT --- */
 .gradient-text {
   background: linear-gradient(90deg, #7A5AF8, #9B5DE0);
   -webkit-background-clip: text;   /* For Safari/Chrome */
@@ -57,7 +60,7 @@ main {
 
 /* --- FOOTER (custom-footer) --- */
 
-/* Setter bakgrunnen for footeren */
+/* Footer container styling */
 .custom-footer {
     background-color: #7A5AF8; /* Dyp lilla */
     color: white; 
@@ -69,86 +72,92 @@ main {
     width: 100%;
 }
 
+/* Links inside the footer */
 .custom-footer a {
     color: #fdcffa; /* Lys lenkefarge */
     text-decoration: none;
     font-weight: 500;
 }
 
-/* --- Overstyring av Bootstrap Knapper (btn-primary) --- */
+/* --- BOOTSTRAP BUTTON OVERRIDES --- */
 
-/* Standardfarge for alle btn-primary knapper */
+/* Primary button style */
 .btn-primary {
-    /* Setter standard bakgrunn til den mørkeblå fargen (samme som navbar) */
-    background-color: #4E56C0; 
+    background-color: #4E56C0; /* Same as navbar color */
     border-color: #4E56C0;
     color: #ffffff;
     /* Fjerner skygge fra fokus/aktivitet, som ofte er blå som standard */
-    box-shadow: none; 
-    transition: background-color 0.3s ease; /* Jevn fargeovergang */
+    box-shadow: none;  /* Removes default focus shadow */
+    transition: background-color 0.3s ease; /* Smooth hover transition */
 }
 
-/* Hover-effekt: Når brukeren holder musen over knappen */
+/* Hover/focus/active state for primary buttons */
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active {
-    /* Setter hover-fargen til den mørke lillafargen */
-    background-color: #9B5DE0 !important;
+    background-color: #9B5DE0 !important; /* Darker purple */
     border-color: #9B5DE0 !important;
     color: #ffffff;
-    /* Må fjerne de standard Bootstrap-skygger som dukker opp ved hover */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important; 
-    opacity: 1; /* Sikrer at knappen vises i full opasitet */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important; /* Soft shadow on hover */
+    opacity: 1; /* Ensures full visibility */
 }
 
-/* Stil for de sekundære knappene (Grid/Table View knappen) */
+/* Secondary button style (used for alternate actions like Grid/Table view) */
 .btn-secondary {
-    background-color: #D78FEE; /* Bruker den lyse lilla fargen */
+    background-color: #D78FEE; /* Light lavender */
     border-color: #D78FEE;
-    color: #4E56C0; /* Mørk tekstfarge for kontrast */
+    color: #4E56C0; /* Blue text for contrast */
     transition: background-color 0.3s ease;
 }
 
+/* Hover effect for secondary buttons */
 .btn-secondary:hover {
-    background-color: #9B5DE0; /* Hover til mørkere lilla */
+    background-color: #9B5DE0; /* Darker purple on hover */
     border-color: #9B5DE0;
     color: #ffffff;
 }
 
-/* KORTET MED QUIZ */
+/* --- QUIZ CARD STYLING --- */
+
+/* Card container (used for quiz previews) */
 .card {
-    border: 3px solid #7A5AF8; /* Tykk, lilla ramme */
-    border-radius: 15px; /* Avrundede hjørner */
-    transition: transform 0.2s;
-    box-shadow: 0 6px 10px rgba(78, 86, 192, 0.15); /* Subtil blå skygge */
+    border: 3px solid #7A5AF8; /* Thick purple border */
+    border-radius: 15px; /* Rounded corners */
+    transition: transform 0.2s; /* Smooth lift on hover */
+    box-shadow: 0 6px 10px rgba(78, 86, 192, 0.15); /* Soft blue shadow */
 }
 
+/* Hover effect for cards */
 .card:hover {
-    transform: translateY(-5px); /* Løfter kortet når man holder musen over */
-    box-shadow: 0 10px 20px rgba(78, 86, 192, 0.3); /* Tykkere skygge */
+    transform: translateY(-5px); /* Slight upward motion */
+    box-shadow: 0 10px 20px rgba(78, 86, 192, 0.3); /* Stronger shadow on hover */
 }
 
+/* Image styling inside cards */
 .card-img-top {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
-    object-fit: cover;
+    object-fit: cover; /* Ensures consistent image cropping */
     height: 150px; 
 }
 
-/* TABLE SIDE */
+/* --- TABLE PAGE STYLING --- */
 
+/* General table styling */
 .table {
     border: 2px solid #7A5AF8;
     border-radius: 10px;
     overflow: hidden;
 }
 
+/* Table headers */
 .table th {
     background-color: #4E56C0;
     color: white;
     border-color: #7A5AF8;
 }
 
+/* Table cells */
 .table td {
     border-color: #E0C4F6;
 }
