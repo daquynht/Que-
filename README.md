@@ -7,7 +7,9 @@ Controllers: Dette er koblingen mellom views og databasen. Controllerne snakker 
 Viewmodels: Dette er tilpassede datapakker til visning. Brukes for å vise akkurat det viewet trenger og ikke alt fra modellen.
 Data access layer: Her håndteres kommunikasjonen med databasen. CRUD håndteres her. Vi bruker entity framework for å kunne kommunisere med databasen ved å bruke dotnet objekter/ c# klasser
 
-For å kjøre prosjektet må man skrive i terminal: 
+Filtrering av quizer er kun et prof of consept.
+
+For å kjøre prosjektet må man: 
 cd Que
 dotnet build
 dotnet run
