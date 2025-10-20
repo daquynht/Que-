@@ -13,3 +13,5 @@ For å kjøre prosjektet må man:
 cd Que
 dotnet build
 dotnet run
+
+Gruppemedlemmer: Erik Grimstveit s385500, Da Quynh Truong s385550, Zoey Retzius s380936, Sara Solstad Wessel-Hansen s385572, Arthur Thonrud Flotvik s369519
