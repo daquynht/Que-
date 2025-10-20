@@ -179,7 +179,7 @@ public class QuizController : Controller
 
         if (!success)
         {
-            ModelState.AddModelError(string.Empty, "En feil oppstod under lagring av endringene.");
+            ModelState.AddModelError(string.Empty, "An error occurred while saving changes.");
             return View(model);
         }
         return RedirectToAction("Table");
@@ -212,10 +212,10 @@ public class QuizController : Controller
         return RedirectToAction(nameof(Table));
     }
 
-    // ========================
-    // TAKE (GET): viser ett spørsmål av gangen
+    // =========================
+    // TAKE (GET) – shows one question at a time
     // URL: /Quiz/Take/{id}?questionNumber=1
-    // ========================
+    // =========================
 
     [HttpGet]
     public async Task<IActionResult> Take(int id, int questionNumber = 1)
@@ -226,7 +226,7 @@ public class QuizController : Controller
 
         if (quiz == null || questions == null || !questions.Any())
         {
-            return NotFound("Quizen eller dens spørsmål ble ikke funnet.");
+            return NotFound("Quiz or its questions were not found.");
         }
 
         // If questionNumber is out of range, redirect to Result
@@ -248,7 +248,7 @@ public class QuizController : Controller
         var viewModel = new QuizTakeViewModel
         {
             QuizId = quiz.QuizId,
-            QuizName = quiz.Name ?? "Ukjent Quiz",
+            QuizName = quiz.Name ?? "Unknown Quiz",
             QuestionNumber = questionNumber,
             TotalQuestions = questions.Count,
             QuestionId = question.QuestionId,
@@ -267,7 +267,7 @@ public class QuizController : Controller
     }
 
     // ========================
-    // TAKE (POST): tar imot svaret, evaluerer og går videre
+    // TAKE (POST): evaluates answer and moves to next question or result
     // ========================
 
     [HttpPost]
