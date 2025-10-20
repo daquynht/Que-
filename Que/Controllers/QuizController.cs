@@ -23,17 +23,23 @@ public class QuizController : Controller
     public async Task<IActionResult> Grid()
     {
         var quizes = (await _quizRepository.GetAll()).ToList();
+        if (quizes == null)
+        {
+            _logger.LogError("[QuizController] Quiz list not found while executing _quizRepository.GetAll().ToList()");
+            return NotFound("Quiz list not found");
+        }
         var viewModel = new QuizesViewModel(quizes, "Grid");
         return View(viewModel);
     }
 
     public async Task<IActionResult> Table()
     {
-        _logger.LogInformation("This is an information message.");
-        _logger.LogWarning("This is a warning message.");
-        _logger.LogError("This is an error message.");
-
         var quizes = (await _quizRepository.GetAll()).ToList();
+        if (quizes == null)
+        {
+            _logger.LogError("[QuizController] Quiz list not found while executing _quizRepository.GetAll().ToList()");
+            return NotFound("Quiz list not found");
+        }
         var viewModel = new QuizesViewModel(quizes, "Table");
         return View(viewModel);
     }
@@ -41,6 +47,11 @@ public class QuizController : Controller
     public async Task<IActionResult> SeeQuizes()
     {
         var quizes = (await _quizRepository.GetAll()).ToList();
+        if (quizes == null)
+        {
+            _logger.LogError("[QuizController] Quiz list not found while executing _quizRepository.GetAll().ToList()");
+            return NotFound("Quiz list not found");
+        }
         var viewModel = new QuizesViewModel(quizes, "SeeQuizes");
         return View(viewModel);
     }
