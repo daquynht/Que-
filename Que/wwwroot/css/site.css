@@ -1,27 +1,3 @@
-/*body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
-}
-
-.navbar {
-    background-color: #4CAF50;
-}
-
-.navbar a {
-    color: white;
-    font-weight: 600;
-}
-
-footer {
-    background-color: #4CAF50;
-    color: white;
-    text-align: center;
-    padding: 10px;
-    margin-top: 30px;
-} */
-
 /* Generell stil for hele applikasjonen */
 html, body {
     font-family: 'Poppins', sans-serif;
@@ -38,7 +14,7 @@ main {
     flex: 1 0 auto;
 }
 
-/* --- Navigasjonsbar (custom-navbar) --- */
+/* --- NAVIGASJONSBAR (custom-navbar) --- */
 
 /* Setter bakgrunnen for navbar ved hjelp av den custom-klassen i _Layout.cshtml */
 .custom-navbar {
@@ -71,7 +47,15 @@ main {
     font-weight: 500;
 }
 
-/* --- Footer (custom-footer) --- */
+.gradient-text {
+  background: linear-gradient(90deg, #7A5AF8, #9B5DE0);
+  -webkit-background-clip: text;   /* For Safari/Chrome */
+  -webkit-text-fill-color: transparent;
+  background-clip: text;           /* For Firefox (partial support) */
+  color: transparent;
+}
+
+/* --- FOOTER (custom-footer) --- */
 
 /* Setter bakgrunnen for footeren */
 .custom-footer {
@@ -151,7 +135,7 @@ main {
     height: 150px; 
 }
 
-/* TABLE SIDE*/
+/* TABLE SIDE */
 
 .table {
     border: 2px solid #7A5AF8;
@@ -170,10 +154,3 @@ main {
 }
 
 
-.gradient-text {
-  background: linear-gradient(90deg, #7A5AF8, #9B5DE0);
-  -webkit-background-clip: text;   /* For Safari/Chrome */
-  -webkit-text-fill-color: transparent;
-  background-clip: text;           /* For Firefox (partial support) */
-  color: transparent;
-}
